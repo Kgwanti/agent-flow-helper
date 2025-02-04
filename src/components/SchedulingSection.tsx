@@ -2,6 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -9,9 +12,71 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+interface UserDetailsForm {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
 
 const SchedulingSection = () => {
   const [date, setDate] = useState<Date | undefined>(undefined);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const { toast } = useToast();
+
+  const form = useForm<UserDetailsForm>({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+    },
+  });
+
+  const onSubmit = (data: UserDetailsForm) => {
+    // Here you would typically send this data to your backend
+    console.log("Booking details:", {
+      ...data,
+      date,
+      time: selectedTime,
+    });
+
+    toast({
+      title: "Viewing Scheduled!",
+      description: "We'll send you a confirmation email shortly.",
+    });
+    
+    setShowDetailsDialog(false);
+    form.reset();
+    setDate(undefined);
+    setSelectedTime(null);
+  };
+
+  const handleTimeSelection = (time: string) => {
+    setSelectedTime(time);
+  };
+
+  const handleConfirmViewing = () => {
+    if (!date || !selectedTime) {
+      toast({
+        variant: "destructive",
+        title: "Please select both date and time",
+        description: "You need to choose a date and time slot before proceeding.",
+      });
+      return;
+    }
+    setShowDetailsDialog(true);
+  };
 
   return (
     <section className="py-16 bg-white">
@@ -46,8 +111,9 @@ const SchedulingSection = () => {
                       {["9:00 AM", "10:00 AM", "11:00 AM", "2:00 PM", "3:00 PM", "4:00 PM"].map((time) => (
                         <Button
                           key={time}
-                          variant="outline"
+                          variant={selectedTime === time ? "default" : "outline"}
                           className="justify-start"
+                          onClick={() => handleTimeSelection(time)}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {time}
@@ -56,11 +122,87 @@ const SchedulingSection = () => {
                     </div>
                   </div>
                   
-                  <Button className="w-full" size="lg">
+                  <Button 
+                    className="w-full" 
+                    size="lg"
+                    onClick={handleConfirmViewing}
+                  >
                     Confirm Viewing
                   </Button>
                 </div>
               </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Your Details</DialogTitle>
+              </DialogHeader>
+              
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="John" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="john.doe@example.com" type="email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="+1 (555) 000-0000" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <Button type="submit" className="w-full">
+                    Schedule Viewing
+                  </Button>
+                </form>
+              </Form>
             </DialogContent>
           </Dialog>
         </div>
