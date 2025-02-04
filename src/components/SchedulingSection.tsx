@@ -5,6 +5,7 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -43,23 +44,63 @@ const SchedulingSection = () => {
     },
   });
 
-  const onSubmit = (data: UserDetailsForm) => {
-    // Here you would typically send this data to your backend
-    console.log("Booking details:", {
-      ...data,
-      date,
-      time: selectedTime,
-    });
+  const onSubmit = async (data: UserDetailsForm) => {
+    if (!date || !selectedTime) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please select both date and time for your viewing.",
+      });
+      return;
+    }
 
-    toast({
-      title: "Viewing Scheduled!",
-      description: "We'll send you a confirmation email shortly.",
-    });
-    
-    setShowDetailsDialog(false);
-    form.reset();
-    setDate(undefined);
-    setSelectedTime(null);
+    try {
+      // First, create or update the user profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          phone: data.phone,
+        });
+
+      if (profileError) throw profileError;
+
+      // Get the current user's ID
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData?.user?.id) {
+        throw new Error('User not authenticated');
+      }
+
+      // Create the viewing appointment
+      const { error: appointmentError } = await supabase
+        .from('viewing_appointments')
+        .insert({
+          profile_id: userData.user.id,
+          viewing_date: date.toISOString().split('T')[0],
+          viewing_time: selectedTime,
+        });
+
+      if (appointmentError) throw appointmentError;
+
+      toast({
+        title: "Viewing Scheduled!",
+        description: "We'll send you a confirmation email shortly.",
+      });
+      
+      setShowDetailsDialog(false);
+      form.reset();
+      setDate(undefined);
+      setSelectedTime(null);
+    } catch (error) {
+      console.error('Error scheduling viewing:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "There was a problem scheduling your viewing. Please try again.",
+      });
+    }
   };
 
   const handleTimeSelection = (time: string) => {
