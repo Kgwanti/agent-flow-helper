@@ -55,10 +55,17 @@ const SchedulingSection = () => {
     }
 
     try {
-      // First, create or update the user profile
+      // Get the current user's ID first
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData?.user?.id) {
+        throw new Error('User not authenticated');
+      }
+
+      // Create or update the user profile with the user ID
       const { error: profileError } = await supabase
         .from('profiles')
         .upsert({
+          id: userData.user.id,
           first_name: data.firstName,
           last_name: data.lastName,
           email: data.email,
@@ -66,12 +73,6 @@ const SchedulingSection = () => {
         });
 
       if (profileError) throw profileError;
-
-      // Get the current user's ID
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData?.user?.id) {
-        throw new Error('User not authenticated');
-      }
 
       // Create the viewing appointment
       const { error: appointmentError } = await supabase
