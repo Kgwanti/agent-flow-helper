@@ -4,11 +4,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Users, Calendar, MessageSquare, Bot } from "lucide-react";
 
-interface NavbarProps {
-  onOpenAIAssistant?: () => void;
-}
-
-const Navbar = ({ onOpenAIAssistant }: NavbarProps) => {
+const Navbar = () => {
   const [session, setSession] = useState<any>(null);
   const navigate = useNavigate();
 
@@ -59,8 +55,10 @@ const Navbar = ({ onOpenAIAssistant }: NavbarProps) => {
                     Clients
                   </Button>
                 </Link>
-                <Button variant="ghost" size="icon" onClick={onOpenAIAssistant}>
-                  <Bot className="h-5 w-5" />
+                <Button variant="ghost" size="icon" asChild>
+                  <Link to="/assistant">
+                    <Bot className="h-5 w-5" />
+                  </Link>
                 </Button>
                 <Button onClick={handleSignOut} variant="outline">
                   Sign Out
@@ -68,8 +66,10 @@ const Navbar = ({ onOpenAIAssistant }: NavbarProps) => {
               </>
             ) : (
               <>
-                <Button variant="ghost" size="icon" onClick={onOpenAIAssistant}>
-                  <Bot className="h-5 w-5" />
+                <Button variant="ghost" size="icon" asChild>
+                  <Link to="/assistant">
+                    <Bot className="h-5 w-5" />
+                  </Link>
                 </Button>
                 <Link to="/auth">
                   <Button>Sign In</Button>

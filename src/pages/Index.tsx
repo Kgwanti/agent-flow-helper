@@ -10,7 +10,6 @@ import { supabase } from "@/integrations/supabase/client";
 const Index = () => {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [showFloatingAssistant, setShowFloatingAssistant] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -31,14 +30,10 @@ const Index = () => {
     return <div>Loading...</div>;
   }
 
-  const handleOpenAIAssistant = () => {
-    setShowFloatingAssistant(true);
-  };
-
   if (!session) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar onOpenAIAssistant={handleOpenAIAssistant} />
+        <Navbar />
         <Hero />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -49,19 +44,14 @@ const Index = () => {
             </div>
           </div>
         </div>
-        {showFloatingAssistant && (
-          <AIChatAssistant 
-            embedded={false} 
-            onClose={() => setShowFloatingAssistant(false)} 
-          />
-        )}
+        <AIChatAssistant embedded={false} />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar onOpenAIAssistant={handleOpenAIAssistant} />
+      <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -75,12 +65,7 @@ const Index = () => {
           </div>
         </div>
       </div>
-      {showFloatingAssistant && (
-        <AIChatAssistant 
-          embedded={false} 
-          onClose={() => setShowFloatingAssistant(false)} 
-        />
-      )}
+      <AIChatAssistant embedded={false} />
     </div>
   );
 };

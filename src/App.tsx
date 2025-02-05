@@ -4,6 +4,7 @@ import Auth from "@/pages/Auth";
 import NotFound from "@/pages/NotFound";
 import ClientManagement from "@/pages/ClientManagement";
 import Viewings from "@/pages/Viewings";
+import AIAssistant from "@/pages/AIAssistant";
 import { Toaster } from "@/components/ui/toaster";
 import "./App.css";
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/clients" element={<ClientManagement />} />
         <Route path="/viewings" element={<Viewings />} />
+        <Route path="/assistant" element={<AIAssistant />} />
         <Route path="/communications" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
