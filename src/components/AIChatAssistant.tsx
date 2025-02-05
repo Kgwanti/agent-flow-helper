@@ -21,8 +21,12 @@ const greetings = [
   "Good day, real estate czar! Let's make those listings shine like gold—before they turn into fool's gold"
 ];
 
-const AIChatAssistant = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface AIChatAssistantProps {
+  embedded?: boolean;
+}
+
+const AIChatAssistant = ({ embedded = false }: AIChatAssistantProps) => {
+  const [isOpen, setIsOpen] = useState(embedded);
   const [greeting, setGreeting] = useState("");
   const [userProfile, setUserProfile] = useState<{ first_name?: string } | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -49,7 +53,10 @@ const AIChatAssistant = () => {
     };
 
     fetchUserProfile();
-  }, []);
+    if (embedded || isOpen) {
+      setGreeting(getRandomGreeting());
+    }
+  }, [embedded, isOpen]);
 
   const getRandomGreeting = () => {
     const randomIndex = Math.floor(Math.random() * greetings.length);
@@ -107,34 +114,47 @@ const AIChatAssistant = () => {
     }
   };
 
+  const chatContent = (
+    <>
+      <div className="flex-1 p-4 overflow-y-auto">
+        <div className="bg-muted rounded-lg p-3 mb-4">
+          <p className="text-sm">
+            {getPersonalizedMessage()}
+          </p>
+        </div>
+        {messages.map((message, index) => (
+          <ChatMessage key={index} message={message} />
+        ))}
+        {isLoading && (
+          <div className="flex items-start gap-2 mb-4">
+            <Skeleton className="h-10 w-32" />
+          </div>
+        )}
+      </div>
+      
+      <ChatInput
+        inputMessage={inputMessage}
+        setInputMessage={setInputMessage}
+        sendMessage={sendMessage}
+        isLoading={isLoading}
+      />
+    </>
+  );
+
+  if (embedded) {
+    return (
+      <div className="bg-white rounded-lg h-[500px] flex flex-col">
+        {chatContent}
+      </div>
+    );
+  }
+
   return (
     <div className="fixed bottom-6 right-6 z-50">
       {isOpen ? (
         <div className="bg-white rounded-lg shadow-xl w-[350px] h-[500px] flex flex-col">
           <ChatHeader onClose={() => setIsOpen(false)} />
-          
-          <div className="flex-1 p-4 overflow-y-auto">
-            <div className="bg-muted rounded-lg p-3 mb-4">
-              <p className="text-sm">
-                {getPersonalizedMessage()}
-              </p>
-            </div>
-            {messages.map((message, index) => (
-              <ChatMessage key={index} message={message} />
-            ))}
-            {isLoading && (
-              <div className="flex items-start gap-2 mb-4">
-                <Skeleton className="h-10 w-32" />
-              </div>
-            )}
-          </div>
-          
-          <ChatInput
-            inputMessage={inputMessage}
-            setInputMessage={setInputMessage}
-            sendMessage={sendMessage}
-            isLoading={isLoading}
-          />
+          {chatContent}
         </div>
       ) : (
         <Button
