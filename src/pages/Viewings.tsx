@@ -82,13 +82,13 @@ const Viewings = () => {
 
       if (error) throw error;
 
+      // Update the local state to remove the deleted appointment
+      setAppointments(appointments.filter(appointment => appointment.id !== id));
+
       toast({
         title: "Success",
         description: "Appointment deleted successfully",
       });
-
-      // Refresh the appointments list
-      fetchAppointments();
     } catch (error) {
       console.error("Error deleting appointment:", error);
       toast({
