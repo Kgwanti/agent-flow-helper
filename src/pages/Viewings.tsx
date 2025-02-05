@@ -94,7 +94,8 @@ const Viewings = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container mx-auto py-8">
+      {/* Added pb-20 to create space for the sign out button */}
+      <div className="container mx-auto py-8 pb-20">
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
