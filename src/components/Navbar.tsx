@@ -69,7 +69,12 @@ const Navbar = () => {
                     <span>Assistant</span>
                   </Link>
                 </Button>
-                <Button onClick={handleSignOut} variant="outline" size="default" className="min-w-[100px] text-sm">
+                <Button 
+                  onClick={handleSignOut} 
+                  variant="outline" 
+                  size="default" 
+                  className="min-w-[100px] text-sm bg-white hover:bg-accent"
+                >
                   Sign Out
                 </Button>
               </>
