@@ -9,7 +9,6 @@ interface UseAIChatActionsProps {
   setInputMessage: (message: string) => void;
   setIsLoading: (loading: boolean) => void;
   setEmailConfirmation: React.Dispatch<React.SetStateAction<EmailConfirmation>>;
-  emailConfirmation: EmailConfirmation;
   userProfile: { email?: string } | null;
 }
 
@@ -19,7 +18,6 @@ export const useAIChatActions = ({
   setInputMessage,
   setIsLoading,
   setEmailConfirmation,
-  emailConfirmation,
   userProfile
 }: UseAIChatActionsProps) => {
   const { toast } = useToast();
@@ -40,7 +38,7 @@ export const useAIChatActions = ({
         body: { 
           message,
           userId,
-          sendEmail: false // We'll handle email sending after confirmation
+          sendEmail: false
         }
       });
 
@@ -81,48 +79,5 @@ export const useAIChatActions = ({
     }
   };
 
-  const confirmAndSendEmail = async () => {
-    try {
-      setIsLoading(true);
-      const { data, error } = await supabase.functions.invoke('chat-with-ai', {
-        body: { 
-          message: "Please send the last response as an email",
-          userId,
-          sendEmail: true
-        }
-      });
-
-      if (error) throw error;
-
-      // Log the email communication
-      await supabase
-        .from('communication_logs')
-        .insert([{
-          profile_id: userId,
-          message_type: 'email',
-          content: `Email sent: ${emailConfirmation.content}`
-        }]);
-
-      toast({
-        title: "Email Sent",
-        description: "A copy of this conversation has been sent to your email.",
-      });
-    } catch (error) {
-      console.error('Error sending email:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to send email. Please try again.",
-      });
-    } finally {
-      setIsLoading(false);
-      setEmailConfirmation({
-        show: false,
-        content: '',
-        recipientEmail: ''
-      });
-    }
-  };
-
-  return { sendMessage, confirmAndSendEmail };
+  return { sendMessage };
 };
