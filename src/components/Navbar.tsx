@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import NavLinks from "./navbar/NavLinks";
 import SignOutButton from "./navbar/SignOutButton";
-import { Building2 } from "lucide-react"; // Import the Building2 icon
+import { Building2 } from "lucide-react";
 
 const Navbar = () => {
   const [session, setSession] = useState<any>(null);
@@ -31,7 +31,7 @@ const Navbar = () => {
   return (
     <>
       <nav className="bg-background border-b">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
               <Link to="/" className="flex items-center gap-2">
