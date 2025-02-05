@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { ViewingAppointment } from "@/types/viewing";
@@ -10,6 +10,8 @@ const DashboardSummary = () => {
   const [viewings, setViewings] = useState<ViewingAppointment[]>([]);
   const [communications, setCommunications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCommunicationsWarning, setShowCommunicationsWarning] = useState(true);
+  const [showViewingsWarning, setShowViewingsWarning] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,12 +60,20 @@ const DashboardSummary = () => {
       <Card className="bg-white/100 backdrop-blur-sm">
         <CardHeader>
           <CardTitle>Recent Communications</CardTitle>
-          <Alert variant="warning" className="mt-2">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Showing demo data. Add real communications to replace these examples.
-            </AlertDescription>
-          </Alert>
+          {showCommunicationsWarning && (
+            <Alert variant="warning" className="mt-2 relative">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Showing demo data. Add real communications to replace these examples.
+              </AlertDescription>
+              <button
+                onClick={() => setShowCommunicationsWarning(false)}
+                className="absolute top-2 right-2 text-yellow-700 hover:text-yellow-900"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </Alert>
+          )}
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -91,12 +101,20 @@ const DashboardSummary = () => {
       <Card className="bg-white/100 backdrop-blur-sm">
         <CardHeader>
           <CardTitle>Upcoming Viewings</CardTitle>
-          <Alert variant="warning" className="mt-2">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Showing demo data. Schedule real viewings to replace these examples.
-            </AlertDescription>
-          </Alert>
+          {showViewingsWarning && (
+            <Alert variant="warning" className="mt-2 relative">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Showing demo data. Schedule real viewings to replace these examples.
+              </AlertDescription>
+              <button
+                onClick={() => setShowViewingsWarning(false)}
+                className="absolute top-2 right-2 text-yellow-700 hover:text-yellow-900"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </Alert>
+          )}
         </CardHeader>
         <CardContent>
           {loading ? (
