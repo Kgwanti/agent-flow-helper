@@ -15,7 +15,7 @@ const greetings = [
   "Good day, real estate czar! Let's make those listings shine like gold—before they turn into fool's gold"
 ];
 
-const getRandomGreeting = () => {
+export const getRandomGreeting = () => {
   const randomIndex = Math.floor(Math.random() * greetings.length);
   return greetings[randomIndex];
 };

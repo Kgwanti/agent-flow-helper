@@ -13,7 +13,6 @@ export const useAIChat = (embedded = false) => {
     isLoading,
     setIsLoading,
     userId,
-    getRandomGreeting,
     userProfile
   } = useAIChatState(embedded);
 
