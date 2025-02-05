@@ -14,10 +14,18 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-type CommunicationLog = Tables<"communication_logs", never>;
+interface Profile {
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+}
+
+interface CommunicationWithProfile extends Tables<"communication_logs"> {
+  profile: Profile | null;
+}
 
 const Communications = () => {
-  const [communications, setCommunications] = useState<CommunicationLog[]>([]);
+  const [communications, setCommunications] = useState<CommunicationWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
