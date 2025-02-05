@@ -1,10 +1,8 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FileUp, Loader2, Trash2, FileSearch, FileText, Home } from "lucide-react";
-import { format } from "date-fns";
+import { Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import Navbar from "@/components/Navbar";
 import {
@@ -15,9 +13,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { DocumentUploadButton } from "@/components/documents/DocumentUploadButton";
+import { DocumentsTable } from "@/components/documents/DocumentsTable";
 
 const Documents = () => {
-  const [uploading, setUploading] = useState(false);
   const [analyzing, setAnalyzing] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -33,77 +32,6 @@ const Documents = () => {
       return data;
     },
   });
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setUploading(true);
-      const fileExt = file.name.split(".").pop();
-      const filePath = `${crypto.randomUUID()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("documents")
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { error: dbError } = await supabase.from("documents").insert({
-        filename: file.name,
-        file_path: filePath,
-        content_type: file.type,
-        size: file.size,
-      });
-
-      if (dbError) throw dbError;
-
-      toast({
-        title: "Success",
-        description: "File uploaded successfully",
-      });
-      refetch();
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to upload file. Please try again.",
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleDelete = async (id: string, filePath: string) => {
-    try {
-      const { error: storageError } = await supabase.storage
-        .from("documents")
-        .remove([filePath]);
-
-      if (storageError) throw storageError;
-
-      const { error: dbError } = await supabase
-        .from("documents")
-        .delete()
-        .eq("id", id);
-
-      if (dbError) throw dbError;
-
-      toast({
-        title: "Success",
-        description: "File deleted successfully",
-      });
-      refetch();
-    } catch (error) {
-      console.error("Error deleting file:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to delete file. Please try again.",
-      });
-    }
-  };
 
   const handleAnalyze = async (documentId: string, action: 'analyze' | 'summarize') => {
     try {
@@ -157,107 +85,15 @@ const Documents = () => {
 
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Documents</h1>
-          <Button
-            disabled={uploading}
-            className="relative"
-            onClick={() => document.getElementById("file-upload")?.click()}
-          >
-            {uploading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <FileUp className="h-4 w-4 mr-2" />
-            )}
-            Upload Document
-          </Button>
-          <input
-            id="file-upload"
-            type="file"
-            className="hidden"
-            onChange={handleFileUpload}
-          />
+          <DocumentUploadButton onUploadSuccess={refetch} />
         </div>
 
-        <div className="bg-white rounded-lg shadow">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="px-6 py-3 text-left text-sm font-semibold">
-                    Filename
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">
-                    Size
-                  </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">
-                    Uploaded
-                  </th>
-                  <th className="px-6 py-3 text-right text-sm font-semibold">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {documents?.map((doc) => (
-                  <tr key={doc.id} className="border-b">
-                    <td className="px-6 py-4 text-sm">{doc.filename}</td>
-                    <td className="px-6 py-4 text-sm">
-                      {Math.round(doc.size / 1024)} KB
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      {format(new Date(doc.created_at), "PPp")}
-                    </td>
-                    <td className="px-6 py-4 text-right flex justify-end items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-blue-600 hover:text-blue-700"
-                        onClick={() => handleAnalyze(doc.id, 'analyze')}
-                        disabled={analyzing === doc.id}
-                      >
-                        {analyzing === doc.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <FileSearch className="h-4 w-4" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-green-600 hover:text-green-700"
-                        onClick={() => handleAnalyze(doc.id, 'summarize')}
-                        disabled={analyzing === doc.id}
-                      >
-                        {analyzing === doc.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <FileText className="h-4 w-4" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-600 hover:text-red-700"
-                        onClick={() => handleDelete(doc.id, doc.file_path)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-                {!documents?.length && (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="px-6 py-4 text-center text-muted-foreground"
-                    >
-                      No documents uploaded yet
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <DocumentsTable
+          documents={documents}
+          analyzing={analyzing}
+          onAnalyze={handleAnalyze}
+          onDelete={refetch}
+        />
       </div>
     </div>
   );
