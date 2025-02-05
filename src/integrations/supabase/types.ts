@@ -140,15 +140,7 @@ export type Database = {
           viewing_date?: string
           viewing_time?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "viewing_appointments_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {

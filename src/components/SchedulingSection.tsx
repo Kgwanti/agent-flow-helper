@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import TimeSlotSelector from "./scheduling/TimeSlotSelector";
 import UserDetailsForm, { UserDetailsFormData } from "./scheduling/UserDetailsForm";
-import AuthRequiredToast from "./scheduling/AuthRequiredToast";
 
 const SchedulingSection = () => {
   const [date, setDate] = useState<Date | undefined>(undefined);
@@ -26,17 +25,7 @@ const SchedulingSection = () => {
     setSelectedTime(time);
   };
 
-  const handleConfirmViewing = async () => {
-    const { data: session } = await supabase.auth.getSession();
-    if (!session?.session?.user) {
-      toast({
-        variant: "destructive",
-        title: "Authentication Required",
-        description: <AuthRequiredToast />,
-      });
-      return;
-    }
-
+  const handleConfirmViewing = () => {
     if (!date || !selectedTime) {
       toast({
         variant: "destructive",
@@ -50,34 +39,9 @@ const SchedulingSection = () => {
 
   const onSubmit = async (data: UserDetailsFormData) => {
     try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session?.session?.user) {
-        toast({
-          variant: "destructive",
-          title: "Authentication Required",
-          description: <AuthRequiredToast />,
-        });
-        return;
-      }
-
-      const userId = session.session.user.id;
-
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: userId,
-          first_name: data.firstName,
-          last_name: data.lastName,
-          email: data.email,
-          phone: data.phone,
-        });
-
-      if (profileError) throw profileError;
-
       const { error: appointmentError } = await supabase
         .from('viewing_appointments')
         .insert({
-          profile_id: userId,
           viewing_date: date?.toISOString().split('T')[0],
           viewing_time: selectedTime,
         });
