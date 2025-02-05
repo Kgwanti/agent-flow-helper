@@ -9,6 +9,27 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      cache_control: {
+        Row: {
+          cache_key: string
+          id: string
+          invalidation_time: string
+          last_updated: string
+        }
+        Insert: {
+          cache_key: string
+          id?: string
+          invalidation_time?: string
+          last_updated?: string
+        }
+        Update: {
+          cache_key?: string
+          id?: string
+          invalidation_time?: string
+          last_updated?: string
+        }
+        Relationships: []
+      }
       client_preferences: {
         Row: {
           created_at: string
@@ -201,6 +222,12 @@ export type Database = {
     Functions: {
       clean_past_appointments: {
         Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      invalidate_cache: {
+        Args: {
+          key: string
+        }
         Returns: undefined
       }
     }

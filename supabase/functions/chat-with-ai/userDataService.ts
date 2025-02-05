@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
+import { getCachedData } from './cacheService.ts';
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -19,39 +20,51 @@ export const fetchUserData = async (userId: string): Promise<UserData> => {
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  const [
-    profileResult,
-    viewingsResult,
-    preferencesResult,
-    communicationLogsResult,
-    documentsResult
-  ] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle(),
-    supabase
-      .from('viewing_appointments')
-      .select('*, profile:profiles(*)')
-      .eq('profile_id', userId)
-      .order('viewing_date', { ascending: true }),
-    supabase
-      .from('client_preferences')
-      .select('*')
-      .eq('profile_id', userId)
-      .maybeSingle(),
-    supabase
-      .from('communication_logs')
-      .select('*')
-      .eq('profile_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(5),
-    supabase
-      .from('documents')
-      .select('*')
-      .eq('profile_id', userId)
-      .order('created_at', { ascending: false })
+  // Profile data is not cached as it's critical to always be up-to-date
+  const profileResult = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+
+  // Fetch other data with caching
+  const [viewings, preferences, communications, documents] = await Promise.all([
+    getCachedData('viewing_appointments', async () => {
+      const { data } = await supabase
+        .from('viewing_appointments')
+        .select('*, profile:profiles(*)')
+        .eq('profile_id', userId)
+        .order('viewing_date', { ascending: true });
+      return data || [];
+    }),
+    
+    getCachedData('user_preferences', async () => {
+      const { data } = await supabase
+        .from('client_preferences')
+        .select('*')
+        .eq('profile_id', userId)
+        .maybeSingle();
+      return data;
+    }),
+    
+    getCachedData(`communications_${userId}`, async () => {
+      const { data } = await supabase
+        .from('communication_logs')
+        .select('*')
+        .eq('profile_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      return data || [];
+    }),
+    
+    getCachedData('documents', async () => {
+      const { data } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('profile_id', userId)
+        .order('created_at', { ascending: false });
+      return data || [];
+    })
   ]);
 
   // Send welcome email for new users
@@ -73,9 +86,9 @@ export const fetchUserData = async (userId: string): Promise<UserData> => {
 
   return {
     profile: profileResult.data,
-    viewings: viewingsResult.data || [],
-    preferences: preferencesResult.data,
-    recentCommunications: communicationLogsResult.data || [],
-    documents: documentsResult.data || []
+    viewings,
+    preferences,
+    recentCommunications: communications,
+    documents
   };
 };
