@@ -53,7 +53,7 @@ const DashboardSummary = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card>
+      <Card className="bg-white/100 backdrop-blur-sm">
         <CardHeader>
           <CardTitle>Recent Communications</CardTitle>
         </CardHeader>
@@ -80,7 +80,7 @@ const DashboardSummary = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-white/100 backdrop-blur-sm">
         <CardHeader>
           <CardTitle>Upcoming Viewings</CardTitle>
         </CardHeader>
