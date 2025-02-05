@@ -43,7 +43,7 @@ const Viewings = () => {
           viewing_date,
           viewing_time,
           address,
-          profile:profiles (
+          profile:profiles!viewing_appointments_profile_id_fkey (
             first_name,
             last_name,
             email,
