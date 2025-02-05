@@ -106,6 +106,38 @@ export type Database = {
           },
         ]
       }
+      document_analysis: {
+        Row: {
+          created_at: string
+          document_id: string
+          extracted_info: Json | null
+          id: string
+          summary: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          extracted_info?: Json | null
+          id?: string
+          summary?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          extracted_info?: Json | null
+          id?: string
+          summary?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_analysis_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           content_type: string | null
