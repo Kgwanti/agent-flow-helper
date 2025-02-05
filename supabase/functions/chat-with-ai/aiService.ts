@@ -24,6 +24,9 @@ export async function generateAIResponse(message: string, context: string) {
    - Access and review uploaded documents
    - Check document status and history
    - Find specific documents quickly
+   - Generate contract drafts and agreements
+   - Extract and flag key information from documents
+   - Track document revisions and versions
 
 4. 📆 Calendar & Reminders:
    - View your upcoming appointments
@@ -75,3 +78,4 @@ Just let me know what you'd like assistance with, and I'll be happy to help!`;
     throw new Error('Failed to generate AI response');
   }
 }
+
