@@ -74,6 +74,7 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         fadeIn: "fadeIn 0.5s ease-out",
         "gradient-slow": "gradient 15s ease infinite",
+        border: "gradient 3s linear infinite",
       },
       backgroundSize: {
         "300%": "300%",
