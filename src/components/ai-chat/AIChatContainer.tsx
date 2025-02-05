@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Bot } from "lucide-react";
 import { ChatHeader } from "../chat/ChatHeader";
@@ -15,6 +16,7 @@ export const AIChatContainer = ({
   inputMessage,
   setInputMessage,
   sendMessage,
+  resetChat,
 }: AIChatContainerProps & AIChatContentProps) => {
   const chatContent = (
     <AIChatContent
@@ -24,6 +26,7 @@ export const AIChatContainer = ({
       inputMessage={inputMessage}
       setInputMessage={setInputMessage}
       sendMessage={sendMessage}
+      resetChat={resetChat}
     />
   );
 

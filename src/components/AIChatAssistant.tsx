@@ -1,3 +1,4 @@
+
 import { AIChatContainer } from "./ai-chat/AIChatContainer";
 import { useAIChat } from "./ai-chat/useAIChat";
 import { AIChatProps } from "./ai-chat/types";
@@ -25,7 +26,8 @@ const AIChatAssistant = ({ embedded = false, onClose }: AIChatProps) => {
     handleClose,
     emailConfirmation,
     confirmAndSendEmail,
-    cancelEmailSend
+    cancelEmailSend,
+    resetChat,
   } = useAIChat(embedded);
 
   const handleCloseWrapper = () => {
@@ -35,7 +37,7 @@ const AIChatAssistant = ({ embedded = false, onClose }: AIChatProps) => {
 
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
-      sendMessage(inputMessage);
+      sendMessage();
     }
   };
 
@@ -52,6 +54,7 @@ const AIChatAssistant = ({ embedded = false, onClose }: AIChatProps) => {
         inputMessage={inputMessage}
         setInputMessage={setInputMessage}
         sendMessage={handleSendMessage}
+        resetChat={resetChat}
       />
 
       <AlertDialog open={emailConfirmation.show}>

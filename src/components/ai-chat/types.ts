@@ -1,3 +1,4 @@
+
 import { Message } from "@/types/chat";
 
 export interface AIChatProps {
@@ -18,6 +19,7 @@ export interface AIChatContentProps {
   inputMessage: string;
   setInputMessage: (message: string) => void;
   sendMessage: () => void;
+  resetChat: () => void;
 }
 
 export interface EmailConfirmation {

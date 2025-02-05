@@ -1,3 +1,4 @@
+
 import { useAIChatState } from './hooks/useAIChatState';
 import { useAIChatActions } from './hooks/useAIChatActions';
 import { useEmailActions } from './hooks/useEmailActions';
@@ -16,7 +17,8 @@ export const useAIChat = (embedded = false) => {
     userId,
     userProfile,
     emailConfirmation,
-    setEmailConfirmation
+    setEmailConfirmation,
+    getRandomGreeting
   } = useAIChatState(embedded);
 
   const { sendMessage } = useAIChatActions({
@@ -40,6 +42,12 @@ export const useAIChat = (embedded = false) => {
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
 
+  const resetChat = () => {
+    setMessages([]);
+    setInputMessage("");
+    setGreeting(getRandomGreeting());
+  };
+
   const getPersonalizedMessage = () => {
     if (userProfile?.first_name) {
       return `Hi ${userProfile.first_name}! ${greeting}`;
@@ -60,5 +68,6 @@ export const useAIChat = (embedded = false) => {
     emailConfirmation,
     confirmAndSendEmail,
     cancelEmailSend,
+    resetChat,
   };
 };
