@@ -29,12 +29,14 @@ const AIChatAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
+          setUserId(session.user.id);
           const { data: profile } = await supabase
             .from('profiles')
             .select('first_name')
@@ -77,7 +79,10 @@ const AIChatAssistant = () => {
       setInputMessage("");
 
       const { data, error } = await supabase.functions.invoke('chat-with-ai', {
-        body: { message: inputMessage }
+        body: { 
+          message: inputMessage,
+          userId: userId
+        }
       });
 
       if (error) {

@@ -1,7 +1,10 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
 
 const openRouterApiKey = Deno.env.get('OPENROUTER_API_KEY');
+const supabaseUrl = Deno.env.get('SUPABASE_URL');
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,12 +22,57 @@ serve(async (req) => {
       throw new Error('OpenRouter API key not configured');
     }
 
-    const { message } = await req.json();
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('Supabase credentials not found');
+      throw new Error('Supabase credentials not configured');
+    }
+
+    const { message, userId } = await req.json();
     if (!message) {
       throw new Error('No message provided');
     }
 
+    // Initialize Supabase client with service role key
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Fetch user profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    // Fetch user's viewing appointments
+    const { data: viewings } = await supabase
+      .from('viewing_appointments')
+      .select('*')
+      .eq('profile_id', userId);
+
+    // Fetch user's preferences
+    const { data: preferences } = await supabase
+      .from('client_preferences')
+      .select('*')
+      .eq('profile_id', userId)
+      .single();
+
+    // Create context about the user and their data
+    const userContext = `
+Current user: ${profile?.first_name || 'User'} ${profile?.last_name || ''}
+Contact: ${profile?.email || 'No email'}, ${profile?.phone || 'No phone'}
+
+Upcoming viewings: ${viewings?.length ? viewings.map(v => 
+  `\n- ${v.address} on ${v.viewing_date} at ${v.viewing_time}`
+).join('') : 'No upcoming viewings'}
+
+Preferences: ${preferences ? `
+- Property types: ${preferences.preferred_property_types?.join(', ') || 'Not specified'}
+- Price range: ${preferences.min_price || 'Any'} - ${preferences.max_price || 'Any'}
+- Preferred viewing times: ${preferences.preferred_viewing_times?.join(', ') || 'Not specified'}
+` : 'No preferences set'}
+    `;
+
     console.log('Preparing request to OpenRouter API with message:', message);
+    console.log('User context:', userContext);
     
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -44,7 +92,12 @@ serve(async (req) => {
             2. Provide information about real estate processes
             3. Assist with basic client inquiries
             4. Maintain a professional but friendly tone
-            Always be helpful and accurate in your responses.`
+            
+            Here is the context about the current user:
+            ${userContext}
+            
+            Use this information to provide personalized responses. When discussing viewings or preferences,
+            reference the actual data provided above. Always be helpful and accurate in your responses.`
           },
           {
             role: 'user',
