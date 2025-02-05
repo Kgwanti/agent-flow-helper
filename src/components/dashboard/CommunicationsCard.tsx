@@ -1,7 +1,8 @@
+
 import { useState } from "react";
 import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, X } from "lucide-react";
+import { AlertCircle, X, MessageSquare } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface CommunicationsCardProps {
@@ -15,7 +16,10 @@ const CommunicationsCard = ({ communications, loading }: CommunicationsCardProps
   return (
     <Card className="bg-white/100 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle>Recent Communications</CardTitle>
+        <div className="flex items-center gap-2">
+          <MessageSquare className="h-5 w-5 text-muted-foreground" />
+          <CardTitle>Recent Communications</CardTitle>
+        </div>
         {showWarning && (
           <Alert variant="warning" className="mt-2 relative">
             <AlertCircle className="h-4 w-4" />
