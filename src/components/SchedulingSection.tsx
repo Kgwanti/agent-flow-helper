@@ -1,19 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import TimeSlotSelector from "./scheduling/TimeSlotSelector";
-import UserDetailsForm, { UserDetailsFormData } from "./scheduling/UserDetailsForm";
+import { UserDetailsFormData } from "./scheduling/UserDetailsForm";
+import SchedulingDialog from "./scheduling/SchedulingDialog";
+import UserDetailsDialog from "./scheduling/UserDetailsDialog";
 
 const SchedulingSection = () => {
   const [date, setDate] = useState<Date | undefined>(undefined);
@@ -78,53 +74,21 @@ const SchedulingSection = () => {
                 Schedule a Viewing
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
-              <DialogHeader>
-                <DialogTitle>Schedule a Viewing</DialogTitle>
-                <DialogDescription>
-                  Choose your preferred date and time for the property viewing.
-                </DialogDescription>
-              </DialogHeader>
-              
-              <div className="grid md:grid-cols-2 gap-8 items-start mt-4">
-                <div className="bg-muted p-4 rounded-lg shadow-sm">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    className="rounded-md border"
-                  />
-                </div>
-                
-                <div className="space-y-6">
-                  <TimeSlotSelector
-                    selectedTime={selectedTime}
-                    onTimeSelect={handleTimeSelection}
-                  />
-                  
-                  <Button 
-                    className="w-full" 
-                    size="lg"
-                    onClick={handleConfirmViewing}
-                  >
-                    Confirm Viewing
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
+            <SchedulingDialog
+              date={date}
+              setDate={setDate}
+              selectedTime={selectedTime}
+              onTimeSelect={handleTimeSelection}
+              onConfirm={handleConfirmViewing}
+              open={true}
+            />
           </Dialog>
 
-          <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>Your Details</DialogTitle>
-                <DialogDescription>
-                  Please provide your contact information for the viewing appointment.
-                </DialogDescription>
-              </DialogHeader>
-              <UserDetailsForm onSubmit={onSubmit} />
-            </DialogContent>
-          </Dialog>
+          <UserDetailsDialog
+            open={showDetailsDialog}
+            onOpenChange={setShowDetailsDialog}
+            onSubmit={onSubmit}
+          />
         </div>
       </div>
     </section>
