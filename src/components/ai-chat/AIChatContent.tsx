@@ -6,7 +6,8 @@ import { ChatMessage } from "../chat/ChatMessage";
 import { AIChatContentProps } from "./types";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, X } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const AIChatContent = ({
   greeting,
@@ -16,6 +17,8 @@ export const AIChatContent = ({
   setInputMessage,
   sendMessage,
   resetChat,
+  showHelpMessage,
+  setShowHelpMessage,
 }: AIChatContentProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -44,6 +47,23 @@ export const AIChatContent = ({
               <RefreshCw className="h-4 w-4" />
             </Button>
           </div>
+
+          {showHelpMessage && (
+            <Alert>
+              <AlertDescription className="flex items-center justify-between">
+                <span>Type "Help" to see how I can be of assistance</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={() => setShowHelpMessage(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+
           {messages.map((message, index) => (
             <ChatMessage key={index} message={message} />
           ))}

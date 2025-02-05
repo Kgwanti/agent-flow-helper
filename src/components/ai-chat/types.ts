@@ -20,6 +20,8 @@ export interface AIChatContentProps {
   setInputMessage: (message: string) => void;
   sendMessage: () => void;
   resetChat: () => void;
+  showHelpMessage: boolean;
+  setShowHelpMessage: (show: boolean) => void;
 }
 
 export interface EmailConfirmation {

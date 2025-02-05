@@ -2,6 +2,7 @@
 import { useAIChatState } from './hooks/useAIChatState';
 import { useAIChatActions } from './hooks/useAIChatActions';
 import { useEmailActions } from './hooks/useEmailActions';
+import { useState } from 'react';
 
 export const useAIChat = (embedded = false) => {
   const {
@@ -20,6 +21,8 @@ export const useAIChat = (embedded = false) => {
     setEmailConfirmation,
     getRandomGreeting
   } = useAIChatState(embedded);
+
+  const [showHelpMessage, setShowHelpMessage] = useState(true);
 
   const { sendMessage } = useAIChatActions({
     userId,
@@ -45,7 +48,7 @@ export const useAIChat = (embedded = false) => {
   const resetChat = () => {
     setMessages([]);
     setInputMessage("");
-    setGreeting(getRandomGreeting());
+    setShowHelpMessage(true);
   };
 
   const getPersonalizedMessage = () => {
@@ -69,5 +72,7 @@ export const useAIChat = (embedded = false) => {
     confirmAndSendEmail,
     cancelEmailSend,
     resetChat,
+    showHelpMessage,
+    setShowHelpMessage,
   };
 };

@@ -28,6 +28,8 @@ const AIChatAssistant = ({ embedded = false, onClose }: AIChatProps) => {
     confirmAndSendEmail,
     cancelEmailSend,
     resetChat,
+    showHelpMessage,
+    setShowHelpMessage,
   } = useAIChat(embedded);
 
   const handleCloseWrapper = () => {
@@ -55,6 +57,8 @@ const AIChatAssistant = ({ embedded = false, onClose }: AIChatProps) => {
         setInputMessage={setInputMessage}
         sendMessage={handleSendMessage}
         resetChat={resetChat}
+        showHelpMessage={showHelpMessage}
+        setShowHelpMessage={setShowHelpMessage}
       />
 
       <AlertDialog open={emailConfirmation.show}>

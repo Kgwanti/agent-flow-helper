@@ -17,6 +17,8 @@ export const AIChatContainer = ({
   setInputMessage,
   sendMessage,
   resetChat,
+  showHelpMessage,
+  setShowHelpMessage,
 }: AIChatContainerProps & AIChatContentProps) => {
   const chatContent = (
     <AIChatContent
@@ -27,6 +29,8 @@ export const AIChatContainer = ({
       setInputMessage={setInputMessage}
       sendMessage={sendMessage}
       resetChat={resetChat}
+      showHelpMessage={showHelpMessage}
+      setShowHelpMessage={setShowHelpMessage}
     />
   );
 
