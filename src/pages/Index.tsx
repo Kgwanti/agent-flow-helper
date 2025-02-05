@@ -32,13 +32,39 @@ const Index = () => {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 animate-gradient-slow"></div>
+        <div className="relative">
+          <Navbar />
+          <Hero />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <SchedulingSection />
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6">
+                <h2 className="text-2xl font-bold mb-6">AI Real Estate Assistant</h2>
+                <AIChatAssistant embedded={true} />
+              </div>
+            </div>
+          </div>
+          <AIChatAssistant embedded={false} />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 animate-gradient-slow"></div>
+      <div className="relative">
         <Navbar />
-        <Hero />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <SchedulingSection />
-            <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <DashboardCards />
+              <DashboardSummary />
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-bold mb-6">AI Real Estate Assistant</h2>
               <AIChatAssistant embedded={true} />
             </div>
@@ -46,26 +72,6 @@ const Index = () => {
         </div>
         <AIChatAssistant embedded={false} />
       </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <DashboardCards />
-            <DashboardSummary />
-          </div>
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-bold mb-6">AI Real Estate Assistant</h2>
-            <AIChatAssistant embedded={true} />
-          </div>
-        </div>
-      </div>
-      <AIChatAssistant embedded={false} />
     </div>
   );
 };
