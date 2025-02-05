@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -18,7 +19,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Home } from "lucide-react";
+import { Users, Home, Mail } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -78,6 +79,40 @@ const ClientManagement = () => {
     fetchProfiles();
   }, [toast]);
 
+  const handleSendEmail = async (profile: Profile) => {
+    if (!profile.email) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Client doesn't have an email address.",
+      });
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke("send-client-email", {
+        body: {
+          toEmail: profile.email,
+          firstName: profile.first_name || "",
+          lastName: profile.last_name || "",
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Email sent to ${profile.first_name} ${profile.last_name}`,
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to send email. Please try again.",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -129,18 +164,29 @@ const ClientManagement = () => {
                       <TableCell>{profile.email}</TableCell>
                       <TableCell>{profile.phone}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            toast({
-                              title: "Coming Soon",
-                              description: "View appointments feature will be available soon.",
-                            });
-                          }}
-                        >
-                          View Appointments
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              toast({
+                                title: "Coming Soon",
+                                description: "View appointments feature will be available soon.",
+                              });
+                            }}
+                          >
+                            View Appointments
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleSendEmail(profile)}
+                            className="flex items-center gap-2"
+                          >
+                            <Mail className="h-4 w-4" />
+                            Send Email
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
