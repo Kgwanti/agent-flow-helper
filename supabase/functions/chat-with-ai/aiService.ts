@@ -22,11 +22,11 @@ export async function generateAIResponse(message: string, context: string) {
 
 3. 📄 Document Management:
    - Access and review uploaded documents
-   - Check document status and history
-   - Find specific documents quickly
-   - Generate contract drafts and agreements
-   - Extract and flag key information from documents
-   - Track document revisions and versions
+   - Generate contracts and agreements
+   - Extract and analyze key information from documents
+   - Monitor document versions and changes
+   - Review contract drafts and proposals
+   - Track document status and history
 
 4. 📆 Calendar & Reminders:
    - View your upcoming appointments
@@ -78,4 +78,3 @@ Just let me know what you'd like assistance with, and I'll be happy to help!`;
     throw new Error('Failed to generate AI response');
   }
 }
-
