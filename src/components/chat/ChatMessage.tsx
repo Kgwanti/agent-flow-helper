@@ -14,13 +14,14 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
       }`}
     >
       <div
-        className={`inline-block rounded-lg p-3 max-w-[80%] ${
+        className={`inline-block rounded-lg p-3 ${
           message.role === 'user'
             ? 'bg-primary text-white'
             : 'bg-muted text-foreground'
         }`}
+        style={{ maxWidth: "80%" }}
       >
-        <ScrollArea className="h-full max-h-[300px] w-[300px] md:w-[400px]">
+        <ScrollArea className="w-full max-w-[300px] md:max-w-[400px]" style={{ maxHeight: message.content.length > 200 ? "300px" : "auto" }}>
           <div className="text-sm whitespace-pre-wrap break-words pr-4">
             {message.content}
           </div>
