@@ -14,12 +14,15 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { message, userId, sendEmail = false } = await req.json();
+    console.log('Received request with message:', message, 'userId:', userId);
+    
     if (!message) {
       throw new Error('No message provided');
     }
@@ -83,7 +86,10 @@ Documents: ${userData.documents?.length ?
     return new Response(
       JSON.stringify({ response: aiResponse }),
       {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json'
+        },
       }
     );
 
