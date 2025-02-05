@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -24,7 +25,18 @@ const SchedulingSection = () => {
     setSelectedTime(time);
   };
 
-  const handleConfirmViewing = () => {
+  const handleConfirmViewing = async () => {
+    // Check authentication first
+    const { data: session } = await supabase.auth.getSession();
+    if (!session?.session?.user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Required",
+        description: "Please sign in to schedule a viewing.",
+      });
+      return;
+    }
+
     if (!date || !selectedTime) {
       toast({
         variant: "destructive",
@@ -37,25 +49,24 @@ const SchedulingSection = () => {
   };
 
   const onSubmit = async (data: UserDetailsFormData) => {
-    if (!date || !selectedTime) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please select both date and time for your viewing.",
-      });
-      return;
-    }
-
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData?.user?.id) {
-        throw new Error('User not authenticated');
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session?.user) {
+        toast({
+          variant: "destructive",
+          title: "Authentication Required",
+          description: "Please sign in to schedule a viewing.",
+        });
+        return;
       }
 
+      const userId = session.session.user.id;
+
+      // First update or create the profile
       const { error: profileError } = await supabase
         .from('profiles')
         .upsert({
-          id: userData.user.id,
+          id: userId,
           first_name: data.firstName,
           last_name: data.lastName,
           email: data.email,
@@ -64,11 +75,12 @@ const SchedulingSection = () => {
 
       if (profileError) throw profileError;
 
+      // Then create the viewing appointment
       const { error: appointmentError } = await supabase
         .from('viewing_appointments')
         .insert({
-          profile_id: userData.user.id,
-          viewing_date: date.toISOString().split('T')[0],
+          profile_id: userId,
+          viewing_date: date?.toISOString().split('T')[0],
           viewing_time: selectedTime,
         });
 
@@ -106,6 +118,9 @@ const SchedulingSection = () => {
             <DialogContent className="sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>Schedule a Viewing</DialogTitle>
+                <DialogDescription>
+                  Choose your preferred date and time for the property viewing.
+                </DialogDescription>
               </DialogHeader>
               
               <div className="grid md:grid-cols-2 gap-8 items-start mt-4">
@@ -140,6 +155,9 @@ const SchedulingSection = () => {
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle>Your Details</DialogTitle>
+                <DialogDescription>
+                  Please provide your contact information for the viewing appointment.
+                </DialogDescription>
               </DialogHeader>
               <UserDetailsForm onSubmit={onSubmit} />
             </DialogContent>
