@@ -4,7 +4,7 @@ import { Message } from '@/types/chat';
 
 interface UseAIChatActionsProps {
   userId: string | null;
-  setMessages: (messages: Message[]) => void;
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   setInputMessage: (message: string) => void;
   setIsLoading: (loading: boolean) => void;
 }
@@ -22,8 +22,8 @@ export const useAIChatActions = ({
 
     try {
       setIsLoading(true);
-      const userMessage = { role: 'user' as const, content: message };
-      setMessages(prev => [...prev, userMessage]);
+      const userMessage: Message = { role: 'user', content: message };
+      setMessages((prev: Message[]) => [...prev, userMessage]);
       setInputMessage("");
 
       // Check if the message contains keywords about sending an email
@@ -46,8 +46,8 @@ export const useAIChatActions = ({
         throw new Error('No response received from AI');
       }
 
-      const assistantMessage = { role: 'assistant' as const, content: data.response };
-      setMessages(prev => [...prev, assistantMessage]);
+      const assistantMessage: Message = { role: 'assistant', content: data.response };
+      setMessages((prev: Message[]) => [...prev, assistantMessage]);
 
       if (wantsEmail) {
         toast({
@@ -57,11 +57,11 @@ export const useAIChatActions = ({
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      const errorMessage = { 
-        role: 'assistant' as const, 
+      const errorMessage: Message = { 
+        role: 'assistant', 
         content: 'Sorry, I encountered an error. Please try again later.' 
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev: Message[]) => [...prev, errorMessage]);
       toast({
         variant: "destructive",
         title: "Error",

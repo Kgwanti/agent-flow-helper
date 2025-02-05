@@ -17,12 +17,17 @@ const greetings = [
 
 export const useAIChatState = (embedded = false) => {
   const [isOpen, setIsOpen] = useState(embedded);
-  const [greeting, setGreeting] = useState("");
+  const [greeting, setGreeting] = useState(getRandomGreeting());
   const [userProfile, setUserProfile] = useState<{ first_name?: string } | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+
+  const getRandomGreeting = () => {
+    const randomIndex = Math.floor(Math.random() * greetings.length);
+    return greetings[randomIndex];
+  };
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -43,21 +48,12 @@ export const useAIChatState = (embedded = false) => {
     };
 
     fetchUserProfile();
-    if (embedded || isOpen) {
-      setGreeting(getRandomGreeting());
-    }
   }, [embedded, isOpen]);
-
-  const getRandomGreeting = () => {
-    const randomIndex = Math.floor(Math.random() * greetings.length);
-    return greetings[randomIndex];
-  };
 
   return {
     isOpen,
     setIsOpen,
     greeting,
-    setGreeting,
     userProfile,
     messages,
     setMessages,

@@ -26,7 +26,6 @@ export const useAIChat = (embedded = false) => {
 
   const handleOpen = () => {
     setIsOpen(true);
-    setGreeting(getRandomGreeting());
   };
 
   const handleClose = () => {
