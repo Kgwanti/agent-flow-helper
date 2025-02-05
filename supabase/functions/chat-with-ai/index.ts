@@ -35,30 +35,42 @@ serve(async (req) => {
     // Initialize Supabase client with service role key
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Optimize queries by selecting only needed fields
-    const [profileResult, viewingsResult, preferencesResult] = await Promise.all([
+    // Fetch all relevant user data in parallel
+    const [
+      profileResult,
+      viewingsResult,
+      preferencesResult,
+      communicationLogsResult
+    ] = await Promise.all([
       supabase
         .from('profiles')
-        .select('first_name, last_name, email, phone')
+        .select('*')
         .eq('id', userId)
         .single(),
       supabase
         .from('viewing_appointments')
-        .select('address, viewing_date, viewing_time')
+        .select('*')
         .eq('profile_id', userId)
-        .gte('viewing_date', new Date().toISOString().split('T')[0]),
+        .order('viewing_date', { ascending: true }),
       supabase
         .from('client_preferences')
-        .select('preferred_property_types, min_price, max_price, preferred_viewing_times')
+        .select('*')
         .eq('profile_id', userId)
-        .single()
+        .single(),
+      supabase
+        .from('communication_logs')
+        .select('*')
+        .eq('profile_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(5)
     ]);
 
     const profile = profileResult.data;
     const viewings = viewingsResult.data;
     const preferences = preferencesResult.data;
+    const recentCommunications = communicationLogsResult.data;
 
-    // Create context about the user and their data
+    // Create comprehensive context about the user and their data
     const userContext = `
 Current user: ${profile?.first_name || 'User'} ${profile?.last_name || ''}
 Contact: ${profile?.email || 'No email'}, ${profile?.phone || 'No phone'}
@@ -67,13 +79,17 @@ Upcoming viewings: ${viewings?.length ? viewings.map(v =>
   `\n- ${v.address} on ${v.viewing_date} at ${v.viewing_time}`
 ).join('') : 'No upcoming viewings'}
 
-Preferences: ${preferences ? `
+Client preferences: ${preferences ? `
 - Property types: ${preferences.preferred_property_types?.join(', ') || 'Not specified'}
 - Price range: ${preferences.min_price || 'Any'} - ${preferences.max_price || 'Any'}
 - Preferred viewing times: ${preferences.preferred_viewing_times?.join(', ') || 'Not specified'}
-` : 'No preferences set'}`;
+` : 'No preferences set'}
 
-    console.log('Preparing request to OpenRouter API with message:', message);
+Recent communications: ${recentCommunications?.length ? 
+  recentCommunications.map(c => `\n- ${c.message_type}: ${c.content}`).join('') 
+  : 'No recent communications'}`;
+
+    console.log('Preparing request to OpenRouter API with context:', userContext);
     
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -97,16 +113,21 @@ Preferences: ${preferences ? `
             Here is the context about the current user:
             ${userContext}
             
-            Use this information to provide personalized responses. When discussing viewings or preferences,
-            reference the actual data provided above. Be concise but helpful in your responses.`
+            IMPORTANT INSTRUCTIONS:
+            1. Always prioritize using the actual user data provided above when responding
+            2. Reference specific details from their profile, viewings, and preferences
+            3. If making suggestions, base them on their stated preferences
+            4. For viewing-related queries, check their upcoming viewings first
+            5. Keep responses concise but informative
+            6. If information is missing, encourage them to update their preferences or profile`
           },
           {
             role: 'user',
             content: message
           }
         ],
-        temperature: 0.7, // Lower temperature for more focused responses
-        max_tokens: 150 // Limit response length for faster generation
+        temperature: 0.7,
+        max_tokens: 150
       }),
     });
 
@@ -118,6 +139,17 @@ Preferences: ${preferences ? `
 
     const data = await response.json();
     console.log('Successfully received response from OpenRouter API');
+
+    // Log the interaction
+    await supabase
+      .from('communication_logs')
+      .insert([
+        {
+          profile_id: userId,
+          message_type: 'ai_chat',
+          content: message
+        }
+      ]);
 
     return new Response(
       JSON.stringify({ response: data.choices[0].message.content }),
