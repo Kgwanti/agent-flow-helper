@@ -23,9 +23,10 @@ const greetings = [
 
 interface AIChatAssistantProps {
   embedded?: boolean;
+  onClose?: () => void;
 }
 
-const AIChatAssistant = ({ embedded = false }: AIChatAssistantProps) => {
+const AIChatAssistant = ({ embedded = false, onClose }: AIChatAssistantProps) => {
   const [isOpen, setIsOpen] = useState(embedded);
   const [greeting, setGreeting] = useState("");
   const [userProfile, setUserProfile] = useState<{ first_name?: string } | null>(null);
@@ -114,6 +115,11 @@ const AIChatAssistant = ({ embedded = false }: AIChatAssistantProps) => {
     }
   };
 
+  const handleClose = () => {
+    setIsOpen(false);
+    onClose?.();
+  };
+
   const chatContent = (
     <>
       <div className="flex-1 p-4 overflow-y-auto">
@@ -153,14 +159,14 @@ const AIChatAssistant = ({ embedded = false }: AIChatAssistantProps) => {
     <div className="fixed bottom-6 right-6 z-50">
       {isOpen ? (
         <div className="bg-white rounded-lg shadow-xl w-[350px] h-[500px] flex flex-col">
-          <ChatHeader onClose={() => setIsOpen(false)} />
+          <ChatHeader onClose={handleClose} />
           {chatContent}
         </div>
       ) : (
         <Button
           size="lg"
           className="rounded-full h-14 w-14 shadow-lg"
-          onClick={handleOpen}
+          onClick={() => setIsOpen(true)}
         >
           <MessageSquare className="h-6 w-6" />
         </Button>

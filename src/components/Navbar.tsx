@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, Calendar, MessageSquare } from "lucide-react";
+import { Users, Calendar, MessageSquare, Robot } from "lucide-react";
 
-const Navbar = () => {
+interface NavbarProps {
+  onOpenAIAssistant?: () => void;
+}
+
+const Navbar = ({ onOpenAIAssistant }: NavbarProps) => {
   const [session, setSession] = useState<any>(null);
   const navigate = useNavigate();
 
@@ -55,14 +59,22 @@ const Navbar = () => {
                     Clients
                   </Button>
                 </Link>
+                <Button variant="ghost" size="icon" onClick={onOpenAIAssistant}>
+                  <Robot className="h-5 w-5" />
+                </Button>
                 <Button onClick={handleSignOut} variant="outline">
                   Sign Out
                 </Button>
               </>
             ) : (
-              <Link to="/auth">
-                <Button>Sign In</Button>
-              </Link>
+              <>
+                <Button variant="ghost" size="icon" onClick={onOpenAIAssistant}>
+                  <Robot className="h-5 w-5" />
+                </Button>
+                <Link to="/auth">
+                  <Button>Sign In</Button>
+                </Link>
+              </>
             )}
           </div>
         </div>
