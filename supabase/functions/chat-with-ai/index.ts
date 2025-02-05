@@ -1,82 +1,83 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
+const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
+const apiKey = Deno.env.get('DEEPSEEK_API_KEY');
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-interface ChatMessage {
-  message: string;
-}
+};
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { message } = await req.json() as ChatMessage;
-    const apiKey = Deno.env.get('DEEPSEEK_API_KEY');
-
     if (!apiKey) {
-      console.error('DEEPSEEK_API_KEY is not set');
+      console.error('API key not found');
       throw new Error('API key configuration error');
     }
 
-    console.log('Preparing request to Deepseek API...');
+    const { message } = await req.json();
+    console.log('Preparing request to OpenRouter API...');
     
-    // Log the API URL and headers (excluding the actual API key)
-    console.log('API URL:', DEEPSEEK_API_URL);
+    console.log('API URL:', OPENROUTER_API_URL);
     console.log('Request headers:', {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer [REDACTED]'
+      'Authorization': 'Bearer [REDACTED]',
+      'HTTP-Referer': 'https://www.nexdatasolutions.co/',
+      'X-Title': 'NexData Solutions'
     });
 
-    const response = await fetch(DEEPSEEK_API_URL, {
+    const response = await fetch(OPENROUTER_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
+        'HTTP-Referer': 'https://www.nexdatasolutions.co/',
+        'X-Title': 'NexData Solutions'
       },
       body: JSON.stringify({
-        model: "deepseek-chat",
+        model: 'deepseek/free-r1',
         messages: [
           {
-            role: "system",
-            content: "You are a helpful real estate assistant. You help users with property-related questions, market insights, and general real estate advice. Keep responses concise and professional."
+            role: 'system',
+            content: `You are an AI assistant for a real estate agent. Your role is to:
+            1. Help answer questions about property viewings and appointments
+            2. Provide information about real estate processes
+            3. Assist with basic client inquiries
+            4. Maintain a professional but friendly tone
+            Always be helpful and accurate in your responses.`
           },
           {
-            role: "user",
+            role: 'user',
             content: message
           }
-        ],
-        temperature: 0.7,
-        max_tokens: 500
+        ]
       }),
     });
 
     const data = await response.json();
     
-    // Log response status and headers
-    console.log('Deepseek API Response Status:', response.status);
-    console.log('Deepseek API Response Headers:', Object.fromEntries(response.headers.entries()));
+    console.log('OpenRouter API Response Status:', response.status);
+    console.log('OpenRouter API Response Headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
-      console.error('Deepseek API error:', data);
+      console.error('OpenRouter API error:', data);
       throw new Error(data.error?.message || 'Failed to get AI response');
     }
 
-    console.log('Successfully received response from Deepseek API');
+    console.log('Successfully received response from OpenRouter API');
 
     return new Response(
       JSON.stringify({ response: data.choices[0].message.content }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      },
+      }
     );
+
   } catch (error) {
     console.error('Error in chat-with-ai function:', error);
     return new Response(
@@ -87,7 +88,7 @@ serve(async (req) => {
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
-      },
+      }
     );
   }
 });
