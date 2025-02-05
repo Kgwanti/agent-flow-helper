@@ -2,7 +2,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
-const apiKey = Deno.env.get('DEEPSEEK_API_KEY');
+const apiKey = Deno.env.get('OPENROUTER_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -16,21 +16,17 @@ serve(async (req) => {
 
   try {
     if (!apiKey) {
-      console.error('API key not found');
-      throw new Error('API key configuration error');
+      console.error('OpenRouter API key not found');
+      throw new Error('OpenRouter API key not configured');
     }
 
     const { message } = await req.json();
+    if (!message) {
+      throw new Error('No message provided');
+    }
+
     console.log('Preparing request to OpenRouter API...');
     
-    console.log('API URL:', OPENROUTER_API_URL);
-    console.log('Request headers:', {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer [REDACTED]',
-      'HTTP-Referer': 'https://www.nexdatasolutions.co/',
-      'X-Title': 'NexData Solutions'
-    });
-
     const response = await fetch(OPENROUTER_API_URL, {
       method: 'POST',
       headers: {
@@ -60,16 +56,12 @@ serve(async (req) => {
     });
 
     const data = await response.json();
-    
     console.log('OpenRouter API Response Status:', response.status);
-    console.log('OpenRouter API Response Headers:', Object.fromEntries(response.headers.entries()));
-
+    
     if (!response.ok) {
       console.error('OpenRouter API error:', data);
       throw new Error(data.error?.message || 'Failed to get AI response');
     }
-
-    console.log('Successfully received response from OpenRouter API');
 
     return new Response(
       JSON.stringify({ response: data.choices[0].message.content }),
