@@ -35,24 +35,19 @@ const SchedulingSection = () => {
 
   const onSubmit = async (data: UserDetailsFormData) => {
     try {
-      // First, get the existing profile ID
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', 'kgwanti@nexdatasolutions.co')
-        .single();
-
-      if (profileError) throw profileError;
-
-      if (!profileData?.id) {
-        throw new Error('Profile not found');
+      // Get the current authenticated user
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) throw authError;
+      if (!user) {
+        throw new Error('No authenticated user found');
       }
 
-      // Create the viewing appointment with the existing profile ID
+      // Create the viewing appointment with the user's ID
       const { error: appointmentError } = await supabase
         .from('viewing_appointments')
         .insert({
-          profile_id: profileData.id,
+          profile_id: user.id,
           viewing_date: date?.toISOString().split('T')[0],
           viewing_time: selectedTime,
           address: data.address,
