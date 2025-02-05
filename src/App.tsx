@@ -13,6 +13,8 @@ function App() {
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/clients" element={<ClientManagement />} />
+        <Route path="/viewings" element={<NotFound />} />
+        <Route path="/communications" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster />

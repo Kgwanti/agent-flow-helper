@@ -19,6 +19,14 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface Profile {
   id: string;
@@ -71,59 +79,72 @@ const ClientManagement = () => {
 
   return (
     <div className="min-h-screen bg-background p-6">
-      <Card className="max-w-6xl mx-auto">
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Users className="h-6 w-6" />
-            <CardTitle>Client Management</CardTitle>
-          </div>
-          <CardDescription>
-            View and manage your client profiles
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="text-center py-4">Loading...</div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {profiles.map((profile) => (
-                  <TableRow key={profile.id}>
-                    <TableCell>
-                      {profile.first_name} {profile.last_name}
-                    </TableCell>
-                    <TableCell>{profile.email}</TableCell>
-                    <TableCell>{profile.phone}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          // View appointments functionality can be added here
-                          toast({
-                            title: "Coming Soon",
-                            description: "View appointments feature will be available soon.",
-                          });
-                        }}
-                      >
-                        View Appointments
-                      </Button>
-                    </TableCell>
+      <div className="max-w-6xl mx-auto">
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Clients</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center space-x-2">
+              <Users className="h-6 w-6" />
+              <CardTitle>Client Management</CardTitle>
+            </div>
+            <CardDescription>
+              View and manage your client profiles
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="text-center py-4">Loading...</div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {profiles.map((profile) => (
+                    <TableRow key={profile.id}>
+                      <TableCell>
+                        {profile.first_name} {profile.last_name}
+                      </TableCell>
+                      <TableCell>{profile.email}</TableCell>
+                      <TableCell>{profile.phone}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            toast({
+                              title: "Coming Soon",
+                              description: "View appointments feature will be available soon.",
+                            });
+                          }}
+                        >
+                          View Appointments
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
