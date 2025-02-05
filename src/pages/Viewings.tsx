@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -33,42 +33,68 @@ const Viewings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const fetchAppointments = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("viewing_appointments")
+        .select(`
+          id,
+          viewing_date,
+          viewing_time,
+          address,
+          profile:profiles (
+            first_name,
+            last_name,
+            email,
+            phone
+          )
+        `)
+        .order("viewing_date", { ascending: true });
+
+      if (error) throw error;
+
+      setAppointments(data || []);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load viewing appointments",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("viewing_appointments")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Appointment deleted successfully",
+      });
+
+      // Refresh the appointments list
+      fetchAppointments();
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete appointment",
+      });
+    }
+  };
+
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("viewing_appointments")
-          .select(`
-            id,
-            viewing_date,
-            viewing_time,
-            address,
-            profile:profiles (
-              first_name,
-              last_name,
-              email,
-              phone
-            )
-          `)
-          .order("viewing_date", { ascending: true });
-
-        if (error) throw error;
-
-        setAppointments(data || []);
-      } catch (error) {
-        console.error("Error fetching appointments:", error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to load viewing appointments",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAppointments();
-  }, [toast]);
+  }, []);
 
   return (
     <div className="container mx-auto py-8">
@@ -100,6 +126,7 @@ const Viewings = () => {
                 <TableHead>Address</TableHead>
                 <TableHead>Client Name</TableHead>
                 <TableHead>Contact</TableHead>
+                <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -121,6 +148,17 @@ const Viewings = () => {
                     {appointment.profile
                       ? appointment.profile.email || appointment.profile.phone || "N/A"
                       : "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(appointment.id)}
+                      className="hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete appointment</span>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
