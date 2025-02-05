@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, X } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ViewingAppointment } from "@/types/viewing";
+import { Button } from "@/components/ui/button";
 
 interface ViewingsCardProps {
   viewings: ViewingAppointment[];
@@ -18,17 +19,19 @@ const ViewingsCard = ({ viewings, loading }: ViewingsCardProps) => {
       <CardHeader>
         <CardTitle>Upcoming Viewings</CardTitle>
         {showWarning && (
-          <Alert variant="warning" className="mt-2 relative">
+          <Alert variant="warning" className="mt-2">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Showing demo data. Schedule real viewings to replace these examples.
+            <AlertDescription className="flex items-center justify-between">
+              <span>Showing demo data. Schedule real viewings to replace these examples.</span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowWarning(false)}
+                className="ml-2 text-yellow-700 hover:text-yellow-900 hover:bg-yellow-100"
+              >
+                Dismiss
+              </Button>
             </AlertDescription>
-            <button
-              onClick={() => setShowWarning(false)}
-              className="absolute top-2 right-2 text-yellow-700 hover:text-yellow-900"
-            >
-              <X className="h-4 w-4" />
-            </button>
           </Alert>
         )}
       </CardHeader>
