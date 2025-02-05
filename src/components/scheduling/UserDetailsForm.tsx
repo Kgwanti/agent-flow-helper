@@ -15,6 +15,7 @@ export interface UserDetailsFormData {
   lastName: string;
   email: string;
   phone: string;
+  address: string;
 }
 
 interface UserDetailsFormProps {
@@ -28,6 +29,7 @@ const UserDetailsForm = ({ onSubmit }: UserDetailsFormProps) => {
       lastName: "",
       email: "",
       phone: "",
+      address: "",
     },
   });
 
@@ -84,6 +86,20 @@ const UserDetailsForm = ({ onSubmit }: UserDetailsFormProps) => {
               <FormLabel>Phone Number</FormLabel>
               <FormControl>
                 <Input placeholder="+1 (555) 000-0000" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Property Address</FormLabel>
+              <FormControl>
+                <Input placeholder="123 Main St, City, State, ZIP" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -44,6 +44,7 @@ const SchedulingSection = () => {
         .insert({
           viewing_date: date?.toISOString().split('T')[0],
           viewing_time: selectedTime,
+          address: data.address,
         });
 
       if (appointmentError) throw appointmentError;
