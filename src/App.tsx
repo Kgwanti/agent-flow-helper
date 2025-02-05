@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
@@ -10,7 +11,7 @@ import AIAssistant from "@/pages/AIAssistant";
 import { Toaster } from "@/components/ui/toaster";
 import "./App.css";
 
-function App() {
+const App: React.FC = () => {
   return (
     <Router>
       <Routes>
@@ -26,6 +27,6 @@ function App() {
       <Toaster />
     </Router>
   );
-}
+};
 
 export default App;
