@@ -39,7 +39,7 @@ const AIChatAssistant = ({ embedded = false, onClose }: AIChatProps) => {
 
   const handleSendMessage = () => {
     if (inputMessage.trim()) {
-      sendMessage();
+      sendMessage(inputMessage);
     }
   };
 
