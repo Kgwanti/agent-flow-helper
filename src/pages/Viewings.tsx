@@ -38,8 +38,10 @@ const Viewings = () => {
         const { data, error } = await supabase
           .from("viewing_appointments")
           .select(`
-            *,
-            profile:profiles(
+            id,
+            viewing_date,
+            viewing_time,
+            profile:profiles (
               first_name,
               last_name,
               email,
