@@ -44,7 +44,19 @@ const Auth = () => {
           password,
         });
 
-        if (signInError) throw signInError;
+        if (signInError) {
+          if (signInError.message === "Invalid login credentials") {
+            throw new Error(
+              "Invalid email or password. Please check your credentials and try again."
+            );
+          }
+          if (signInError.message.includes("Email not confirmed")) {
+            throw new Error(
+              "Please verify your email address before signing in. Check your inbox for the verification link."
+            );
+          }
+          throw signInError;
+        }
 
         navigate("/");
       }
@@ -122,15 +134,12 @@ const Auth = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
+              minLength={6}
             />
           </div>
 
           <div>
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Loading..." : isSignUp ? "Sign up" : "Sign in"}
             </Button>
           </div>
