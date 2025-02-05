@@ -25,7 +25,7 @@ serve(async (req) => {
       throw new Error('No message provided');
     }
 
-    console.log('Preparing request to OpenRouter API...');
+    console.log('Preparing request to OpenRouter API with message:', message);
     
     const response = await fetch(OPENROUTER_API_URL, {
       method: 'POST',
@@ -55,13 +55,16 @@ serve(async (req) => {
       }),
     });
 
-    const data = await response.json();
     console.log('OpenRouter API Response Status:', response.status);
     
     if (!response.ok) {
-      console.error('OpenRouter API error:', data);
-      throw new Error(data.error?.message || 'Failed to get AI response');
+      const errorData = await response.text();
+      console.error('OpenRouter API error response:', errorData);
+      throw new Error(`Failed to get AI response: ${errorData}`);
     }
+
+    const data = await response.json();
+    console.log('Successfully received response from OpenRouter API');
 
     return new Response(
       JSON.stringify({ response: data.choices[0].message.content }),
