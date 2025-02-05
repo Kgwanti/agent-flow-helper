@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { FileText, AlertCircle } from "lucide-react";
+import { FileText, AlertCircle, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,7 +48,7 @@ const DocumentsCard = () => {
               }}
               className="absolute top-2 right-2 text-yellow-700 hover:text-yellow-900"
             >
-              ×
+              <X className="h-4 w-4" />
             </button>
           </Alert>
         )}
