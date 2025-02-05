@@ -63,7 +63,10 @@ export const DocumentActions = ({
         {analyzing === documentId ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
-          <FileSearch className="h-4 w-4" />
+          <>
+            <FileSearch className="h-4 w-4" />
+            <span>Analyze</span>
+          </>
         )}
       </Button>
       <Button
@@ -76,7 +79,10 @@ export const DocumentActions = ({
         {analyzing === documentId ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
-          <FileText className="h-4 w-4" />
+          <>
+            <FileText className="h-4 w-4" />
+            <span>Summarize</span>
+          </>
         )}
       </Button>
       <Button
@@ -86,6 +92,7 @@ export const DocumentActions = ({
         onClick={handleDelete}
       >
         <Trash2 className="h-4 w-4" />
+        <span>Delete</span>
       </Button>
     </div>
   );
