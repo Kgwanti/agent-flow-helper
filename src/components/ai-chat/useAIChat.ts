@@ -21,11 +21,13 @@ export const useAIChat = (embedded = false) => {
 
   const { sendMessage } = useAIChatActions({
     userId,
+    messages,
     setMessages,
     setInputMessage,
     setIsLoading,
     setEmailConfirmation,
-    userProfile
+    userProfile,
+    emailConfirmation
   });
 
   const { confirmAndSendEmail, cancelEmailSend } = useEmailActions({
@@ -35,13 +37,8 @@ export const useAIChat = (embedded = false) => {
     emailConfirmation
   });
 
-  const handleOpen = () => {
-    setIsOpen(true);
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-  };
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
 
   const getPersonalizedMessage = () => {
     if (userProfile?.first_name) {

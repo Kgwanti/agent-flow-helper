@@ -5,20 +5,24 @@ import { EmailConfirmation } from '../types';
 
 interface UseAIChatActionsProps {
   userId: string | null;
+  messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   setInputMessage: (message: string) => void;
   setIsLoading: (loading: boolean) => void;
   setEmailConfirmation: React.Dispatch<React.SetStateAction<EmailConfirmation>>;
   userProfile: { email?: string } | null;
+  emailConfirmation: EmailConfirmation;
 }
 
 export const useAIChatActions = ({
   userId,
+  messages,
   setMessages,
   setInputMessage,
   setIsLoading,
   setEmailConfirmation,
-  userProfile
+  userProfile,
+  emailConfirmation
 }: UseAIChatActionsProps) => {
   const { toast } = useToast();
 
@@ -28,10 +32,9 @@ export const useAIChatActions = ({
     try {
       setIsLoading(true);
       const userMessage: Message = { role: 'user', content: message };
-      setMessages((prev: Message[]) => [...prev, userMessage]);
+      setMessages([...messages, userMessage]);
       setInputMessage("");
 
-      // Check if the message contains keywords about sending an email
       const wantsEmail = /email|send|copy|transcript/i.test(message.toLowerCase());
 
       const { data, error } = await supabase.functions.invoke('chat-with-ai', {
@@ -52,9 +55,8 @@ export const useAIChatActions = ({
       }
 
       const assistantMessage: Message = { role: 'assistant', content: data.response };
-      setMessages((prev: Message[]) => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, assistantMessage]);
 
-      // If email is requested and we have the user's email, show confirmation
       if (wantsEmail && userProfile?.email) {
         setEmailConfirmation({
           show: true,
@@ -68,7 +70,7 @@ export const useAIChatActions = ({
         role: 'assistant', 
         content: 'Sorry, I encountered an error. Please try again later.' 
       };
-      setMessages((prev: Message[]) => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
       toast({
         variant: "destructive",
         title: "Error",
