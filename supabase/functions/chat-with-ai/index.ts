@@ -25,7 +25,14 @@ serve(async (req) => {
       throw new Error('API key configuration error');
     }
 
-    console.log('Sending request to Deepseek API with message:', message);
+    console.log('Preparing request to Deepseek API...');
+    
+    // Log the API URL and headers (excluding the actual API key)
+    console.log('API URL:', DEEPSEEK_API_URL);
+    console.log('Request headers:', {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer [REDACTED]'
+    });
 
     const response = await fetch(DEEPSEEK_API_URL, {
       method: 'POST',
@@ -51,12 +58,17 @@ serve(async (req) => {
     });
 
     const data = await response.json();
-    console.log('Received response from Deepseek API:', data);
+    
+    // Log response status and headers
+    console.log('Deepseek API Response Status:', response.status);
+    console.log('Deepseek API Response Headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       console.error('Deepseek API error:', data);
       throw new Error(data.error?.message || 'Failed to get AI response');
     }
+
+    console.log('Successfully received response from Deepseek API');
 
     return new Response(
       JSON.stringify({ response: data.choices[0].message.content }),
@@ -68,7 +80,10 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in chat-with-ai function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        details: 'Please check the Edge Function logs for more information'
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
