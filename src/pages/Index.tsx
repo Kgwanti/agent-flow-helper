@@ -60,18 +60,20 @@ const Index = () => {
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <DashboardCards />
-              <DashboardSummary />
-            </div>
-            <div className="space-y-6">
-              <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6">
-                <h2 className="text-2xl font-bold mb-6">AI Real Estate Assistant</h2>
-                <AIChatAssistant embedded={true} />
+          <div className="space-y-8">
+            <DashboardCards />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                <DashboardSummary />
               </div>
-              <DocumentsCard />
+              <div className="space-y-6">
+                <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6">
+                  <h2 className="text-2xl font-bold mb-6">AI Real Estate Assistant</h2>
+                  <AIChatAssistant embedded={true} />
+                </div>
+              </div>
             </div>
+            <DocumentsCard />
           </div>
         </div>
         <AIChatAssistant embedded={false} />
