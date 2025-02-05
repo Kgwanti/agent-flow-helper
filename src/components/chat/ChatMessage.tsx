@@ -1,4 +1,6 @@
+
 import { Message } from "@/types/chat";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ChatMessageProps {
   message: Message;
@@ -18,7 +20,9 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
             : 'bg-muted text-foreground'
         }`}
       >
-        <p className="text-sm">{message.content}</p>
+        <ScrollArea className="h-full max-h-[200px]">
+          <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+        </ScrollArea>
       </div>
     </div>
   );

@@ -1,8 +1,10 @@
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatInput } from "../chat/ChatInput";
 import { ChatMessage } from "../chat/ChatMessage";
 import { AIChatContentProps } from "./types";
+import { useEffect, useRef } from "react";
 
 export const AIChatContent = ({
   greeting,
@@ -12,9 +14,20 @@ export const AIChatContent = ({
   setInputMessage,
   sendMessage,
 }: AIChatContentProps) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages, isLoading]);
+
   return (
     <>
-      <ScrollArea className="flex-1 p-4">
+      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
         <div className="space-y-4">
           <div className="bg-muted rounded-lg p-3">
             <p className="text-sm">{greeting}</p>
