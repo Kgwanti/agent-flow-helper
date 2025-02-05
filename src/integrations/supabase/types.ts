@@ -30,6 +30,47 @@ export type Database = {
         }
         Relationships: []
       }
+      client_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          max_price: number | null
+          min_price: number | null
+          preferred_property_types: string[] | null
+          preferred_viewing_times: string[] | null
+          profile_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          max_price?: number | null
+          min_price?: number | null
+          preferred_property_types?: string[] | null
+          preferred_viewing_times?: string[] | null
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          max_price?: number | null
+          min_price?: number | null
+          preferred_property_types?: string[] | null
+          preferred_viewing_times?: string[] | null
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_preferences_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       communication_logs: {
         Row: {
           content: string
@@ -38,11 +79,6 @@ export type Database = {
           message_type: string
           profile_id: string | null
           updated_at: string
-          profile?: {
-            first_name: string | null
-            last_name: string | null
-            email: string | null
-          } | null
         }
         Insert: {
           content: string
@@ -67,7 +103,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       documents: {
@@ -108,7 +144,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       profiles: {
@@ -134,7 +170,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           first_name?: string | null
-          id: string
+          id?: string
           last_name?: string | null
           phone?: string | null
           updated_at?: string
@@ -176,7 +212,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
     }
@@ -213,7 +249,7 @@ export type Tables<
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
         Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never,
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {

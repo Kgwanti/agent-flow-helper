@@ -14,25 +14,40 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
+type CommunicationLog = Tables<"communication_logs", never>;
+
 const Communications = () => {
-  const [communications, setCommunications] = useState<Tables<"communication_logs">[]>([]);
+  const [communications, setCommunications] = useState<CommunicationLog[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchCommunications = async () => {
-      const { data, error } = await supabase
-        .from("communication_logs")
-        .select("*, profile:profiles(first_name, last_name, email)")
-        .order("created_at", { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from("communication_logs")
+          .select(`
+            *,
+            profile:profiles(first_name, last_name, email)
+          `)
+          .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching communications:", error);
-        return;
+        if (error) {
+          console.error("Error fetching communications:", error);
+          toast({
+            title: "Error",
+            description: "Failed to load communications",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        setCommunications(data || []);
+      } catch (error) {
+        console.error("Error in fetchCommunications:", error);
+      } finally {
+        setLoading(false);
       }
-
-      setCommunications(data || []);
-      setLoading(false);
     };
 
     fetchCommunications();
@@ -54,7 +69,10 @@ const Communications = () => {
           if (payload.eventType === 'INSERT') {
             const { data: newLog } = await supabase
               .from("communication_logs")
-              .select("*, profile:profiles(first_name, last_name, email)")
+              .select(`
+                *,
+                profile:profiles(first_name, last_name, email)
+              `)
               .eq('id', payload.new.id)
               .single();
 
