@@ -14,8 +14,8 @@ export const ViewingAppointmentRow = ({
   appointment, 
   onDelete 
 }: ViewingAppointmentRowProps) => {
-  console.log("Appointment data in row:", appointment);
-  console.log("Profile data:", appointment.profile);
+  const clientName = formatClientName(appointment.profile);
+  const contactInfo = formatContactInfo(appointment.profile);
   
   return (
     <TableRow>
@@ -24,11 +24,11 @@ export const ViewingAppointmentRow = ({
       </TableCell>
       <TableCell>{appointment.viewing_time}</TableCell>
       <TableCell>{appointment.address || "N/A"}</TableCell>
-      <TableCell>
-        {formatClientName(appointment.profile)}
+      <TableCell className="font-medium">
+        {clientName}
       </TableCell>
       <TableCell>
-        {formatContactInfo(appointment.profile)}
+        {contactInfo}
       </TableCell>
       <TableCell>
         <Button
