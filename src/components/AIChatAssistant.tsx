@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { MessageSquare, Send } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ChatHeader } from "./chat/ChatHeader";
+import { ChatInput } from "./chat/ChatInput";
+import { ChatMessage } from "./chat/ChatMessage";
+import { Message } from "@/types/chat";
 
 const greetings = [
   "Good morning! Ready to turn those bricks into bucks today?",
@@ -17,11 +20,6 @@ const greetings = [
   "Hello, deal broker! Let's squeeze every penny out of these listings and hope no one's living in a cardboard box!",
   "Good day, real estate czar! Let's make those listings shine like gold—before they turn into fool's gold"
 ];
-
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
 
 const AIChatAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -113,20 +111,7 @@ const AIChatAssistant = () => {
     <div className="fixed bottom-6 right-6 z-50">
       {isOpen ? (
         <div className="bg-white rounded-lg shadow-xl w-[350px] h-[500px] flex flex-col">
-          <div className="p-4 bg-primary text-white rounded-t-lg flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              <span className="font-semibold">AI Assistant</span>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-white hover:text-white/80"
-              onClick={() => setIsOpen(false)}
-            >
-              ×
-            </Button>
-          </div>
+          <ChatHeader onClose={() => setIsOpen(false)} />
           
           <div className="flex-1 p-4 overflow-y-auto">
             <div className="bg-muted rounded-lg p-3 mb-4">
@@ -135,22 +120,7 @@ const AIChatAssistant = () => {
               </p>
             </div>
             {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`mb-4 ${
-                  message.role === 'user' ? 'text-right' : 'text-left'
-                }`}
-              >
-                <div
-                  className={`inline-block rounded-lg p-3 max-w-[80%] ${
-                    message.role === 'user'
-                      ? 'bg-primary text-white'
-                      : 'bg-muted text-foreground'
-                  }`}
-                >
-                  <p className="text-sm">{message.content}</p>
-                </div>
-              </div>
+              <ChatMessage key={index} message={message} />
             ))}
             {isLoading && (
               <div className="flex items-start gap-2 mb-4">
@@ -159,30 +129,12 @@ const AIChatAssistant = () => {
             )}
           </div>
           
-          <div className="p-4 border-t">
-            <div className="flex gap-2">
-              <Input
-                placeholder="Type your message..."
-                className="flex-1"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && !isLoading) {
-                    sendMessage();
-                  }
-                }}
-                disabled={isLoading}
-              />
-              <Button 
-                size="icon" 
-                onClick={sendMessage} 
-                disabled={isLoading}
-                className={isLoading ? 'opacity-50 cursor-not-allowed' : ''}
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+          <ChatInput
+            inputMessage={inputMessage}
+            setInputMessage={setInputMessage}
+            sendMessage={sendMessage}
+            isLoading={isLoading}
+          />
         </div>
       ) : (
         <Button
