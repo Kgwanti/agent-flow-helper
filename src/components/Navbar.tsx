@@ -48,7 +48,7 @@ const Navbar = () => {
                 <Button variant="ghost" asChild>
                   <Link to="/communications">
                     <MessageSquare className="h-4 w-4 mr-2" />
-                    Messages
+                    Communications
                   </Link>
                 </Button>
                 <Button variant="ghost" asChild>
