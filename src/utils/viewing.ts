@@ -1,3 +1,5 @@
+import { ViewingAppointment } from "@/types/viewing";
+
 export const formatClientName = (profile: ViewingAppointment['profile']) => {
   if (!profile || (!profile.first_name && !profile.last_name)) return "N/A";
   const firstName = profile.first_name || "";
