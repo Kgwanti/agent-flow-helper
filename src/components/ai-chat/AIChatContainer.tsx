@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import { ChatHeader } from "../chat/ChatHeader";
 import { AIChatContent } from "./AIChatContent";
-import { AIChatContainerProps } from "./types";
+import { AIChatContainerProps, AIChatContentProps } from "./types";
 
 export const AIChatContainer = ({
   embedded,
