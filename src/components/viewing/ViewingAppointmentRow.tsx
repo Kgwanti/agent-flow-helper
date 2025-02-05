@@ -14,6 +14,9 @@ export const ViewingAppointmentRow = ({
   appointment, 
   onDelete 
 }: ViewingAppointmentRowProps) => {
+  console.log("Appointment data in row:", appointment);
+  console.log("Profile data:", appointment.profile);
+  
   return (
     <TableRow>
       <TableCell>

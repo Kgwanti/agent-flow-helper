@@ -34,6 +34,8 @@ const Viewings = () => {
 
       if (error) throw error;
 
+      console.log("Fetched appointments data:", data);
+
       setAppointments(data || []);
     } catch (error) {
       console.error("Error fetching appointments:", error);
