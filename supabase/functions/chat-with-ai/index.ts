@@ -1,10 +1,14 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
+import { Resend } from "npm:resend@2.0.0";
 
 const openRouterApiKey = Deno.env.get('OPENROUTER_API_KEY');
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+const resendApiKey = Deno.env.get('RESEND_API_KEY');
+
+const resend = new Resend(resendApiKey);
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -27,7 +31,7 @@ serve(async (req) => {
       throw new Error('Supabase credentials not configured');
     }
 
-    const { message, userId } = await req.json();
+    const { message, userId, sendEmail = false } = await req.json();
     if (!message) {
       throw new Error('No message provided');
     }
@@ -40,7 +44,8 @@ serve(async (req) => {
       profileResult,
       viewingsResult,
       preferencesResult,
-      communicationLogsResult
+      communicationLogsResult,
+      documentsResult
     ] = await Promise.all([
       supabase
         .from('profiles')
@@ -62,16 +67,24 @@ serve(async (req) => {
         .select('*')
         .eq('profile_id', userId)
         .order('created_at', { ascending: false })
-        .limit(5)
+        .limit(5),
+      supabase
+        .from('documents')
+        .select('*')
+        .eq('profile_id', userId)
+        .order('created_at', { ascending: false })
     ]);
 
     const profile = profileResult.data;
     const viewings = viewingsResult.data;
     const preferences = preferencesResult.data;
     const recentCommunications = communicationLogsResult.data;
+    const documents = documentsResult.data;
 
     // Create comprehensive context about the user and their data
     const userContext = `
+IMPORTANT - THIS IS THE CURRENT USER'S INFORMATION - ALWAYS USE THIS TO PROVIDE ACCURATE AND PERSONALIZED RESPONSES:
+
 Current user: ${profile?.first_name || 'User'} ${profile?.last_name || ''}
 Contact: ${profile?.email || 'No email'}, ${profile?.phone || 'No phone'}
 
@@ -87,7 +100,11 @@ Client preferences: ${preferences ? `
 
 Recent communications: ${recentCommunications?.length ? 
   recentCommunications.map(c => `\n- ${c.message_type}: ${c.content}`).join('') 
-  : 'No recent communications'}`;
+  : 'No recent communications'}
+
+Documents: ${documents?.length ?
+  documents.map(d => `\n- ${d.filename}`).join('')
+  : 'No documents uploaded'}`;
 
     console.log('Preparing request to OpenRouter API with context:', userContext);
     
@@ -114,12 +131,13 @@ Recent communications: ${recentCommunications?.length ?
             ${userContext}
             
             IMPORTANT INSTRUCTIONS:
-            1. Always prioritize using the actual user data provided above when responding
+            1. ALWAYS prioritize using the actual user data provided above when responding
             2. Reference specific details from their profile, viewings, and preferences
             3. If making suggestions, base them on their stated preferences
             4. For viewing-related queries, check their upcoming viewings first
             5. Keep responses concise but informative
-            6. If information is missing, encourage them to update their preferences or profile`
+            6. If information is missing, encourage them to update their preferences or profile
+            7. If the user asks about sending an email, let them know you can do that for them`
           },
           {
             role: 'user',
@@ -127,7 +145,7 @@ Recent communications: ${recentCommunications?.length ?
           }
         ],
         temperature: 0.7,
-        max_tokens: 150
+        max_tokens: 500
       }),
     });
 
@@ -138,7 +156,29 @@ Recent communications: ${recentCommunications?.length ?
     }
 
     const data = await response.json();
+    const aiResponse = data.choices[0].message.content;
     console.log('Successfully received response from OpenRouter API');
+
+    // Send email if requested and user has an email
+    if (sendEmail && profile?.email) {
+      try {
+        await resend.emails.send({
+          from: "Real Estate Assistant <onboarding@resend.dev>",
+          to: [profile.email],
+          subject: "Your Real Estate Assistant Update",
+          html: `
+            <h1>Hello ${profile.first_name || 'there'}!</h1>
+            <p>Here's a copy of our recent conversation:</p>
+            <p><strong>Your message:</strong><br>${message}</p>
+            <p><strong>My response:</strong><br>${aiResponse}</p>
+            <p>Best regards,<br>Your Real Estate Assistant</p>
+          `,
+        });
+        console.log('Email sent successfully to:', profile.email);
+      } catch (emailError) {
+        console.error('Error sending email:', emailError);
+      }
+    }
 
     // Log the interaction
     await supabase
@@ -152,7 +192,7 @@ Recent communications: ${recentCommunications?.length ?
       ]);
 
     return new Response(
-      JSON.stringify({ response: data.choices[0].message.content }),
+      JSON.stringify({ response: aiResponse }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }

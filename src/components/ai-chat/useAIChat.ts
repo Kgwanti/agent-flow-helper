@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Message } from "@/types/chat";
+import { useToast } from "@/hooks/use-toast";
 
 const greetings = [
   "Good morning! Ready to turn those bricks into bucks today?",
@@ -23,6 +24,7 @@ export const useAIChat = (embedded = false) => {
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -78,10 +80,14 @@ export const useAIChat = (embedded = false) => {
       setMessages(prev => [...prev, userMessage]);
       setInputMessage("");
 
+      // Check if the message contains keywords about sending an email
+      const wantsEmail = /email|send|copy|transcript/i.test(inputMessage.toLowerCase());
+
       const { data, error } = await supabase.functions.invoke('chat-with-ai', {
         body: { 
           message: inputMessage,
-          userId: userId
+          userId: userId,
+          sendEmail: wantsEmail
         }
       });
 
@@ -96,6 +102,13 @@ export const useAIChat = (embedded = false) => {
 
       const assistantMessage = { role: 'assistant' as const, content: data.response };
       setMessages(prev => [...prev, assistantMessage]);
+
+      if (wantsEmail) {
+        toast({
+          title: "Email Sent",
+          description: "A copy of this conversation has been sent to your email.",
+        });
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage = { 
@@ -103,6 +116,11 @@ export const useAIChat = (embedded = false) => {
         content: 'Sorry, I encountered an error. Please try again later.' 
       };
       setMessages(prev => [...prev, errorMessage]);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
