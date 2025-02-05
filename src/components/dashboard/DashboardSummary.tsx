@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { ViewingAppointment } from "@/types/viewing";
 
@@ -56,6 +58,12 @@ const DashboardSummary = () => {
       <Card className="bg-white/100 backdrop-blur-sm">
         <CardHeader>
           <CardTitle>Recent Communications</CardTitle>
+          <Alert variant="warning" className="mt-2">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Showing demo data. Add real communications to replace these examples.
+            </AlertDescription>
+          </Alert>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -67,7 +75,7 @@ const DashboardSummary = () => {
               {communications.map((comm) => (
                 <div key={comm.id} className="border-b pb-2">
                   <p className="font-medium">
-                    {comm.profile?.first_name} {comm.profile?.last_name}
+                    {comm.profile?.first_name} {comm.profile?.last_name || '[DEMO] Client'}
                   </p>
                   <p className="text-sm text-muted-foreground">{comm.content}</p>
                   <p className="text-xs text-muted-foreground">
@@ -83,6 +91,12 @@ const DashboardSummary = () => {
       <Card className="bg-white/100 backdrop-blur-sm">
         <CardHeader>
           <CardTitle>Upcoming Viewings</CardTitle>
+          <Alert variant="warning" className="mt-2">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Showing demo data. Schedule real viewings to replace these examples.
+            </AlertDescription>
+          </Alert>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -95,7 +109,7 @@ const DashboardSummary = () => {
                 <div key={viewing.id} className="border-b pb-2">
                   <p className="font-medium">{viewing.address}</p>
                   <p className="text-sm">
-                    {viewing.profile?.first_name} {viewing.profile?.last_name}
+                    {viewing.profile?.first_name} {viewing.profile?.last_name || '[DEMO] Client'}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {format(new Date(viewing.viewing_date), "PPP")} at{" "}
