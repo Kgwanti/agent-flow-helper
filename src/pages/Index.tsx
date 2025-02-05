@@ -5,6 +5,7 @@ import SchedulingSection from "@/components/SchedulingSection";
 import AIChatAssistant from "@/components/AIChatAssistant";
 import DashboardCards from "@/components/dashboard/DashboardCards";
 import DashboardSummary from "@/components/dashboard/DashboardSummary";
+import DocumentsCard from "@/components/dashboard/DocumentsCard";
 import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
@@ -64,9 +65,12 @@ const Index = () => {
               <DashboardCards />
               <DashboardSummary />
             </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-bold mb-6">AI Real Estate Assistant</h2>
-              <AIChatAssistant embedded={true} />
+            <div className="space-y-6">
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6">
+                <h2 className="text-2xl font-bold mb-6">AI Real Estate Assistant</h2>
+                <AIChatAssistant embedded={true} />
+              </div>
+              <DocumentsCard />
             </div>
           </div>
         </div>

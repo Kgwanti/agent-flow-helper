@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, Calendar, MessageSquare, Bot } from "lucide-react";
+import { Users, Calendar, MessageSquare, Bot, FileText } from "lucide-react";
 
 const Navbar = () => {
   const [session, setSession] = useState<any>(null);
@@ -55,6 +55,12 @@ const Navbar = () => {
                   <Link to="/clients">
                     <Users className="h-4 w-4 mr-2" />
                     Clients
+                  </Link>
+                </Button>
+                <Button variant="ghost" asChild>
+                  <Link to="/documents">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Documents
                   </Link>
                 </Button>
                 <Button variant="ghost" asChild>
