@@ -35,25 +35,28 @@ serve(async (req) => {
     // Initialize Supabase client with service role key
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Fetch user profile
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    // Optimize queries by selecting only needed fields
+    const [profileResult, viewingsResult, preferencesResult] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('first_name, last_name, email, phone')
+        .eq('id', userId)
+        .single(),
+      supabase
+        .from('viewing_appointments')
+        .select('address, viewing_date, viewing_time')
+        .eq('profile_id', userId)
+        .gte('viewing_date', new Date().toISOString().split('T')[0]),
+      supabase
+        .from('client_preferences')
+        .select('preferred_property_types, min_price, max_price, preferred_viewing_times')
+        .eq('profile_id', userId)
+        .single()
+    ]);
 
-    // Fetch user's viewing appointments
-    const { data: viewings } = await supabase
-      .from('viewing_appointments')
-      .select('*')
-      .eq('profile_id', userId);
-
-    // Fetch user's preferences
-    const { data: preferences } = await supabase
-      .from('client_preferences')
-      .select('*')
-      .eq('profile_id', userId)
-      .single();
+    const profile = profileResult.data;
+    const viewings = viewingsResult.data;
+    const preferences = preferencesResult.data;
 
     // Create context about the user and their data
     const userContext = `
@@ -68,11 +71,9 @@ Preferences: ${preferences ? `
 - Property types: ${preferences.preferred_property_types?.join(', ') || 'Not specified'}
 - Price range: ${preferences.min_price || 'Any'} - ${preferences.max_price || 'Any'}
 - Preferred viewing times: ${preferences.preferred_viewing_times?.join(', ') || 'Not specified'}
-` : 'No preferences set'}
-    `;
+` : 'No preferences set'}`;
 
     console.log('Preparing request to OpenRouter API with message:', message);
-    console.log('User context:', userContext);
     
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -97,18 +98,18 @@ Preferences: ${preferences ? `
             ${userContext}
             
             Use this information to provide personalized responses. When discussing viewings or preferences,
-            reference the actual data provided above. Always be helpful and accurate in your responses.`
+            reference the actual data provided above. Be concise but helpful in your responses.`
           },
           {
             role: 'user',
             content: message
           }
-        ]
+        ],
+        temperature: 0.7, // Lower temperature for more focused responses
+        max_tokens: 150 // Limit response length for faster generation
       }),
     });
 
-    console.log('OpenRouter API Response Status:', response.status);
-    
     if (!response.ok) {
       const errorData = await response.text();
       console.error('OpenRouter API error response:', errorData);

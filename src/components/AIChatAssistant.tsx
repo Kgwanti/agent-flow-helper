@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { MessageSquare, Send } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const greetings = [
   "Good morning! Ready to turn those bricks into bucks today?",
@@ -151,6 +152,11 @@ const AIChatAssistant = () => {
                 </div>
               </div>
             ))}
+            {isLoading && (
+              <div className="flex items-start gap-2 mb-4">
+                <Skeleton className="h-10 w-32" />
+              </div>
+            )}
           </div>
           
           <div className="p-4 border-t">
@@ -161,13 +167,18 @@ const AIChatAssistant = () => {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === 'Enter' && !isLoading) {
                     sendMessage();
                   }
                 }}
                 disabled={isLoading}
               />
-              <Button size="icon" onClick={sendMessage} disabled={isLoading}>
+              <Button 
+                size="icon" 
+                onClick={sendMessage} 
+                disabled={isLoading}
+                className={isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+              >
                 <Send className="h-4 w-4" />
               </Button>
             </div>
