@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Trash2 } from "lucide-react";
+import { ChevronLeft, Trash2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -30,6 +30,7 @@ interface ViewingAppointment {
 const Viewings = () => {
   const [appointments, setAppointments] = useState<ViewingAppointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -63,7 +64,13 @@ const Viewings = () => {
       });
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchAppointments();
   };
 
   const handleDelete = async (id: string) => {
@@ -108,6 +115,16 @@ const Viewings = () => {
           Back
         </Button>
         <h1 className="text-2xl font-bold">Viewing Appointments</h1>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className={refreshing ? "animate-spin" : ""}
+        >
+          <RefreshCw className="h-4 w-4" />
+          <span className="sr-only">Refresh appointments</span>
+        </Button>
       </div>
 
       {loading ? (
