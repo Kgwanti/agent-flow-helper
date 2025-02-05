@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -53,6 +53,11 @@ const Communications = () => {
         setCommunications(data || []);
       } catch (error) {
         console.error("Error in fetchCommunications:", error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
@@ -73,7 +78,6 @@ const Communications = () => {
         async (payload) => {
           console.log('Real-time update received:', payload);
           
-          // Fetch the complete record including profile information
           if (payload.eventType === 'INSERT') {
             const { data: newLog } = await supabase
               .from("communication_logs")
@@ -82,13 +86,13 @@ const Communications = () => {
                 profile:profiles(first_name, last_name, email)
               `)
               .eq('id', payload.new.id)
-              .single();
+              .maybeSingle();
 
             if (newLog) {
               setCommunications(prev => [newLog, ...prev]);
               toast({
                 title: "New Communication",
-                description: `New ${payload.new.message_type} sent`,
+                description: `New ${payload.new.message_type} received`,
               });
             }
           }
