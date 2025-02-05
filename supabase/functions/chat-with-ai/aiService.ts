@@ -1,8 +1,41 @@
+
 const OPENROUTER_API_KEY = Deno.env.get('OPENROUTER_API_KEY');
 
 export async function generateAIResponse(message: string, context: string) {
   if (!OPENROUTER_API_KEY) {
     throw new Error('OpenRouter API key not configured');
+  }
+
+  // Add special handling for "help" command
+  if (message.toLowerCase().trim() === 'help') {
+    return `I'm your AI real estate assistant, and here's how I can help you:
+
+1. 📅 Viewing Management:
+   - Check your scheduled property viewings
+   - Set up new viewing appointments
+   - Send viewing reminders to clients and agents
+
+2. 📧 Communication:
+   - Send automated emails to clients
+   - Handle routine client inquiries
+   - Manage all client communications in one place
+
+3. 📄 Document Management:
+   - Access and review uploaded documents
+   - Check document status and history
+   - Find specific documents quickly
+
+4. 📆 Calendar & Reminders:
+   - View your upcoming appointments
+   - Set up automated reminders
+   - Manage your availability
+
+5. 👥 Client Management:
+   - Review client information
+   - Track client preferences
+   - Monitor client interactions
+
+Just let me know what you'd like assistance with, and I'll be happy to help!`;
   }
 
   try {
