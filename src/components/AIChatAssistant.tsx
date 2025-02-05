@@ -76,22 +76,17 @@ const AIChatAssistant = () => {
       setMessages(prev => [...prev, userMessage]);
       setInputMessage("");
 
-      const response = await fetch(
-        'https://bmgnrtdviohxmcfyikvt.supabase.co/functions/v1/chat-with-ai',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({ message: inputMessage }),
-        }
-      );
+      const { data, error } = await supabase.functions.invoke('chat-with-ai', {
+        body: { message: inputMessage }
+      });
 
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
+      if (error) {
+        console.error('Error calling chat-with-ai function:', error);
+        throw error;
+      }
+
+      if (!data?.response) {
+        throw new Error('No response received from AI');
       }
 
       const assistantMessage = { role: 'assistant' as const, content: data.response };
