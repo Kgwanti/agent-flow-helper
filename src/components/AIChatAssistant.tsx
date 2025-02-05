@@ -17,10 +17,18 @@ const greetings = [
   "Good day, real estate czar! Let's make those listings shine like gold—before they turn into fool's gold"
 ];
 
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 const AIChatAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [greeting, setGreeting] = useState("");
   const [userProfile, setUserProfile] = useState<{ first_name?: string } | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputMessage, setInputMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -59,6 +67,47 @@ const AIChatAssistant = () => {
     return greeting || "Hello! How can I help you with your real estate needs today?";
   };
 
+  const sendMessage = async () => {
+    if (!inputMessage.trim()) return;
+
+    try {
+      setIsLoading(true);
+      const userMessage = { role: 'user' as const, content: inputMessage };
+      setMessages(prev => [...prev, userMessage]);
+      setInputMessage("");
+
+      const response = await fetch(
+        'https://bmgnrtdviohxmcfyikvt.supabase.co/functions/v1/chat-with-ai',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({ message: inputMessage }),
+        }
+      );
+
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      const assistantMessage = { role: 'assistant' as const, content: data.response };
+      setMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const errorMessage = { 
+        role: 'assistant' as const, 
+        content: 'Sorry, I encountered an error. Please try again later.' 
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="fixed bottom-6 right-6 z-50">
       {isOpen ? (
@@ -84,6 +133,24 @@ const AIChatAssistant = () => {
                 {getPersonalizedMessage()}
               </p>
             </div>
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`mb-4 ${
+                  message.role === 'user' ? 'text-right' : 'text-left'
+                }`}
+              >
+                <div
+                  className={`inline-block rounded-lg p-3 max-w-[80%] ${
+                    message.role === 'user'
+                      ? 'bg-primary text-white'
+                      : 'bg-muted text-foreground'
+                  }`}
+                >
+                  <p className="text-sm">{message.content}</p>
+                </div>
+              </div>
+            ))}
           </div>
           
           <div className="p-4 border-t">
@@ -91,8 +158,16 @@ const AIChatAssistant = () => {
               <Input
                 placeholder="Type your message..."
                 className="flex-1"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    sendMessage();
+                  }
+                }}
+                disabled={isLoading}
               />
-              <Button size="icon">
+              <Button size="icon" onClick={sendMessage} disabled={isLoading}>
                 <Send className="h-4 w-4" />
               </Button>
             </div>
