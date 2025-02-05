@@ -5,9 +5,11 @@ import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useState } from "react";
 
 const DocumentsCard = () => {
   const navigate = useNavigate();
+  const [showWarning, setShowWarning] = useState(true);
 
   const { data: documents } = useQuery({
     queryKey: ["recent-documents"],
@@ -33,12 +35,23 @@ const DocumentsCard = () => {
           <FileText className="h-5 w-5 text-primary" />
           Recent Documents
         </CardTitle>
-        <Alert variant="warning" className="mt-2">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Showing demo documents. Upload real documents to replace these examples.
-          </AlertDescription>
-        </Alert>
+        {showWarning && (
+          <Alert variant="warning" className="mt-2 relative">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Showing demo documents. Upload real documents to replace these examples.
+            </AlertDescription>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowWarning(false);
+              }}
+              className="absolute top-2 right-2 text-yellow-700 hover:text-yellow-900"
+            >
+              ×
+            </button>
+          </Alert>
+        )}
       </CardHeader>
       <CardContent>
         {documents?.length ? (
