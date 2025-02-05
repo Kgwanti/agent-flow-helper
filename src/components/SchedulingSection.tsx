@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -43,7 +43,20 @@ const SchedulingSection = () => {
         throw new Error('No authenticated user found');
       }
 
-      // Create the viewing appointment with the user's ID
+      // Update the user's profile first
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          phone: data.phone,
+        })
+        .eq('id', user.id);
+
+      if (profileError) throw profileError;
+
+      // Create the viewing appointment
       const { error: appointmentError } = await supabase
         .from('viewing_appointments')
         .insert({
