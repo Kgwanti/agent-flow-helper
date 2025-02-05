@@ -29,60 +29,60 @@ const Navbar = () => {
 
   return (
     <nav className="bg-background border-b">
-      <div className="max-w-[1600px] mx-auto px-6 sm:px-8 lg:px-10">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link to="/" className="flex items-center">
               <span className="text-2xl font-bold">Nexdata</span>
             </Link>
           </div>
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-4">
             {session ? (
               <>
-                <Button variant="ghost" size="lg" className="gap-3 min-w-[140px]" asChild>
+                <Button variant="ghost" size="default" className="gap-2 min-w-[110px] text-sm" asChild>
                   <Link to="/viewings">
-                    <Calendar className="h-5 w-5" />
+                    <Calendar className="h-4 w-4" />
                     <span>Viewings</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" size="lg" className="gap-3 min-w-[160px]" asChild>
+                <Button variant="ghost" size="default" className="gap-2 min-w-[140px] text-sm" asChild>
                   <Link to="/communications">
-                    <MessageSquare className="h-5 w-5" />
+                    <MessageSquare className="h-4 w-4" />
                     <span>Communications</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" size="lg" className="gap-3 min-w-[120px]" asChild>
+                <Button variant="ghost" size="default" className="gap-2 min-w-[100px] text-sm" asChild>
                   <Link to="/clients">
-                    <Users className="h-5 w-5" />
+                    <Users className="h-4 w-4" />
                     <span>Clients</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" size="lg" className="gap-3 min-w-[140px]" asChild>
+                <Button variant="ghost" size="default" className="gap-2 min-w-[120px] text-sm" asChild>
                   <Link to="/documents">
-                    <FileText className="h-5 w-5" />
+                    <FileText className="h-4 w-4" />
                     <span>Documents</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" size="lg" className="gap-3 min-w-[140px]" asChild>
+                <Button variant="ghost" size="default" className="gap-2 min-w-[120px] text-sm" asChild>
                   <Link to="/assistant">
-                    <Bot className="h-5 w-5" />
+                    <Bot className="h-4 w-4" />
                     <span>Assistant</span>
                   </Link>
                 </Button>
-                <Button onClick={handleSignOut} variant="outline" size="lg" className="min-w-[120px]">
+                <Button onClick={handleSignOut} variant="outline" size="default" className="min-w-[100px] text-sm">
                   Sign Out
                 </Button>
               </>
             ) : (
               <>
-                <Button variant="ghost" size="lg" className="gap-3 min-w-[140px]" asChild>
+                <Button variant="ghost" size="default" className="gap-2 min-w-[120px] text-sm" asChild>
                   <Link to="/assistant">
-                    <Bot className="h-5 w-5" />
+                    <Bot className="h-4 w-4" />
                     <span>Assistant</span>
                   </Link>
                 </Button>
                 <Link to="/auth">
-                  <Button size="lg" className="min-w-[120px]">Sign In</Button>
+                  <Button size="default" className="min-w-[100px] text-sm">Sign In</Button>
                 </Link>
               </>
             )}
