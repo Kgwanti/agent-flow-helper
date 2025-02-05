@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import NavLinks from "./navbar/NavLinks";
 import SignOutButton from "./navbar/SignOutButton";
+import { Building2 } from "lucide-react"; // Import the Building2 icon
 
 const Navbar = () => {
   const [session, setSession] = useState<any>(null);
@@ -34,11 +35,7 @@ const Navbar = () => {
           <div className="flex justify-between h-16">
             <div className="flex">
               <Link to="/" className="flex items-center">
-                <img 
-                  src="/lovable-uploads/882ee61f-b22e-42ff-8559-6981d4561c63.png" 
-                  alt="Nexdata Logo" 
-                  className="h-8 w-auto"
-                />
+                <Building2 size={32} className="text-primary" />
               </Link>
             </div>
             <div className="flex items-center space-x-4">
