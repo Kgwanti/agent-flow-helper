@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -15,37 +14,25 @@ import {
 } from "@/components/ui/dialog";
 import TimeSlotSelector from "./scheduling/TimeSlotSelector";
 import UserDetailsForm, { UserDetailsFormData } from "./scheduling/UserDetailsForm";
+import AuthRequiredToast from "./scheduling/AuthRequiredToast";
 
 const SchedulingSection = () => {
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const handleTimeSelection = (time: string) => {
     setSelectedTime(time);
   };
 
   const handleConfirmViewing = async () => {
-    // Check authentication first
     const { data: session } = await supabase.auth.getSession();
     if (!session?.session?.user) {
       toast({
         variant: "destructive",
         title: "Authentication Required",
-        description: (
-          <div className="flex flex-col gap-4">
-            <p>Please sign in to schedule a viewing.</p>
-            <Button 
-              variant="outline" 
-              onClick={() => navigate("/auth")}
-              className="mt-2"
-            >
-              Sign In
-            </Button>
-          </div>
-        ),
+        description: <AuthRequiredToast />,
       });
       return;
     }
@@ -68,25 +55,13 @@ const SchedulingSection = () => {
         toast({
           variant: "destructive",
           title: "Authentication Required",
-          description: (
-            <div className="flex flex-col gap-4">
-              <p>Please sign in to schedule a viewing.</p>
-              <Button 
-                variant="outline" 
-                onClick={() => navigate("/auth")}
-                className="mt-2"
-              >
-                Sign In
-              </Button>
-            </div>
-          ),
+          description: <AuthRequiredToast />,
         });
         return;
       }
 
       const userId = session.session.user.id;
 
-      // First update or create the profile
       const { error: profileError } = await supabase
         .from('profiles')
         .upsert({
@@ -99,7 +74,6 @@ const SchedulingSection = () => {
 
       if (profileError) throw profileError;
 
-      // Then create the viewing appointment
       const { error: appointmentError } = await supabase
         .from('viewing_appointments')
         .insert({
