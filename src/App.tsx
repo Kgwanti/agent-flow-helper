@@ -8,6 +8,7 @@ import Viewings from "@/pages/Viewings";
 import Communications from "@/pages/Communications";
 import Documents from "@/pages/Documents";
 import AIAssistant from "@/pages/AIAssistant";
+import AIChatAssistant from "@/components/AIChatAssistant";
 import { Toaster } from "@/components/ui/toaster";
 import "./App.css";
 
@@ -24,6 +25,7 @@ const App: React.FC = () => {
         <Route path="/assistant" element={<AIAssistant />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <AIChatAssistant embedded={false} />
       <Toaster />
     </Router>
   );
