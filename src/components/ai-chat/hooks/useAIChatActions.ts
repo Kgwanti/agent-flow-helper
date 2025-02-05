@@ -9,6 +9,7 @@ interface UseAIChatActionsProps {
   setInputMessage: (message: string) => void;
   setIsLoading: (loading: boolean) => void;
   setEmailConfirmation: React.Dispatch<React.SetStateAction<EmailConfirmation>>;
+  emailConfirmation: EmailConfirmation;
   userProfile: { email?: string } | null;
 }
 
@@ -18,6 +19,7 @@ export const useAIChatActions = ({
   setInputMessage,
   setIsLoading,
   setEmailConfirmation,
+  emailConfirmation,
   userProfile
 }: UseAIChatActionsProps) => {
   const { toast } = useToast();

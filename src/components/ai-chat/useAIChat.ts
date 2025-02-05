@@ -24,6 +24,7 @@ export const useAIChat = (embedded = false) => {
     setInputMessage,
     setIsLoading,
     setEmailConfirmation,
+    emailConfirmation,
     userProfile
   });
 
