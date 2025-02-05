@@ -29,17 +29,17 @@ export const fetchUserData = async (userId: string): Promise<UserData> => {
       .from('profiles')
       .select('*')
       .eq('id', userId)
-      .single(),
+      .maybeSingle(),
     supabase
       .from('viewing_appointments')
-      .select('*')
+      .select('*, profile:profiles(*)')
       .eq('profile_id', userId)
       .order('viewing_date', { ascending: true }),
     supabase
       .from('client_preferences')
       .select('*')
       .eq('profile_id', userId)
-      .single(),
+      .maybeSingle(),
     supabase
       .from('communication_logs')
       .select('*')

@@ -14,7 +14,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -27,17 +26,14 @@ serve(async (req) => {
       throw new Error('No message provided');
     }
 
-    // Initialize Supabase client
     if (!supabaseUrl || !supabaseServiceKey) {
       throw new Error('Supabase credentials not configured');
     }
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Fetch user data
     const userData = await fetchUserData(userId);
     console.log('Successfully fetched user data');
 
-    // Create user context string
     const userContext = `
 Current user: ${userData.profile?.first_name || 'User'} ${userData.profile?.last_name || ''}
 Contact: ${userData.profile?.email || 'No email'}, ${userData.profile?.phone || 'No phone'}
@@ -60,11 +56,9 @@ Documents: ${userData.documents?.length ?
   userData.documents.map(d => `\n- ${d.filename}`).join('')
   : 'No documents uploaded'}`;
 
-    // Generate AI response
     const aiResponse = await generateAIResponse(message, userContext);
     console.log('Successfully received response from OpenRouter API');
 
-    // Send email if requested
     if (sendEmail && userData.profile?.email) {
       await sendEmailTranscript(
         userData.profile.email,
@@ -74,7 +68,6 @@ Documents: ${userData.documents?.length ?
       );
     }
 
-    // Log the interaction
     await supabase
       .from('communication_logs')
       .insert([{

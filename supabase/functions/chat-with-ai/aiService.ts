@@ -21,9 +21,11 @@ export async function generateAIResponse(message: string, userContext: string) {
         messages: [
           {
             role: 'system',
-            content: `You are a helpful real estate assistant. Use the following context about the user to provide personalized responses:
+            content: `You are a helpful real estate assistant with access to the following user data:
             
-            ${userContext}`
+            ${userContext}
+            
+            Use this information to provide personalized and contextually relevant responses. When discussing properties or viewings, reference specific details from the user's history and preferences. If the user asks about their viewings or preferences, provide accurate information from their profile.`
           },
           {
             role: 'user',
