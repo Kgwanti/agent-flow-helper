@@ -1,19 +1,24 @@
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Message } from '@/types/chat';
+import { EmailConfirmation } from '../types';
 
 interface UseAIChatActionsProps {
   userId: string | null;
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   setInputMessage: (message: string) => void;
   setIsLoading: (loading: boolean) => void;
+  setEmailConfirmation: React.Dispatch<React.SetStateAction<EmailConfirmation>>;
+  userProfile: { email?: string } | null;
 }
 
 export const useAIChatActions = ({
   userId,
   setMessages,
   setInputMessage,
-  setIsLoading
+  setIsLoading,
+  setEmailConfirmation,
+  userProfile
 }: UseAIChatActionsProps) => {
   const { toast } = useToast();
 
@@ -33,7 +38,7 @@ export const useAIChatActions = ({
         body: { 
           message,
           userId,
-          sendEmail: wantsEmail
+          sendEmail: false // We'll handle email sending after confirmation
         }
       });
 
@@ -49,10 +54,12 @@ export const useAIChatActions = ({
       const assistantMessage: Message = { role: 'assistant', content: data.response };
       setMessages((prev: Message[]) => [...prev, assistantMessage]);
 
-      if (wantsEmail) {
-        toast({
-          title: "Email Sent",
-          description: "A copy of this conversation has been sent to your email.",
+      // If email is requested and we have the user's email, show confirmation
+      if (wantsEmail && userProfile?.email) {
+        setEmailConfirmation({
+          show: true,
+          content: data.response,
+          recipientEmail: userProfile.email
         });
       }
     } catch (error) {
@@ -72,5 +79,39 @@ export const useAIChatActions = ({
     }
   };
 
-  return { sendMessage };
+  const confirmAndSendEmail = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.functions.invoke('chat-with-ai', {
+        body: { 
+          message: "Please send the last response as an email",
+          userId,
+          sendEmail: true
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Email Sent",
+        description: "A copy of this conversation has been sent to your email.",
+      });
+    } catch (error) {
+      console.error('Error sending email:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to send email. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+      setEmailConfirmation({
+        show: false,
+        content: '',
+        recipientEmail: ''
+      });
+    }
+  };
+
+  return { sendMessage, confirmAndSendEmail };
 };

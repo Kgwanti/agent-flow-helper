@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Message } from '@/types/chat';
 import { supabase } from '@/integrations/supabase/client';
+import { EmailConfirmation } from '../types';
 
 const greetings = [
   "Good morning! Ready to turn those bricks into bucks today?",
@@ -23,11 +24,16 @@ export const getRandomGreeting = () => {
 export const useAIChatState = (embedded = false) => {
   const [isOpen, setIsOpen] = useState(embedded);
   const [greeting, setGreeting] = useState(getRandomGreeting());
-  const [userProfile, setUserProfile] = useState<{ first_name?: string } | null>(null);
+  const [userProfile, setUserProfile] = useState<{ first_name?: string; email?: string } | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [emailConfirmation, setEmailConfirmation] = useState<EmailConfirmation>({
+    show: false,
+    content: '',
+    recipientEmail: ''
+  });
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -37,7 +43,7 @@ export const useAIChatState = (embedded = false) => {
           setUserId(session.user.id);
           const { data: profile } = await supabase
             .from('profiles')
-            .select('first_name')
+            .select('first_name, email')
             .eq('id', session.user.id)
             .maybeSingle();
           setUserProfile(profile);
@@ -62,6 +68,8 @@ export const useAIChatState = (embedded = false) => {
     isLoading,
     setIsLoading,
     userId,
+    emailConfirmation,
+    setEmailConfirmation,
     getRandomGreeting
   };
 };

@@ -19,3 +19,9 @@ export interface AIChatContentProps {
   setInputMessage: (message: string) => void;
   sendMessage: () => void;
 }
+
+export interface EmailConfirmation {
+  show: boolean;
+  content: string;
+  recipientEmail: string;
+}
