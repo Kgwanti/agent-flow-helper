@@ -15,6 +15,11 @@ const greetings = [
   "Good day, real estate czar! Let's make those listings shine like gold—before they turn into fool's gold"
 ];
 
+const getRandomGreeting = () => {
+  const randomIndex = Math.floor(Math.random() * greetings.length);
+  return greetings[randomIndex];
+};
+
 export const useAIChatState = (embedded = false) => {
   const [isOpen, setIsOpen] = useState(embedded);
   const [greeting, setGreeting] = useState(getRandomGreeting());
@@ -23,11 +28,6 @@ export const useAIChatState = (embedded = false) => {
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-
-  const getRandomGreeting = () => {
-    const randomIndex = Math.floor(Math.random() * greetings.length);
-    return greetings[randomIndex];
-  };
 
   useEffect(() => {
     const fetchUserProfile = async () => {
