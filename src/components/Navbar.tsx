@@ -39,25 +39,28 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             {session ? (
               <>
-                <Button variant="ghost" size="icon" asChild>
+                <Button variant="ghost" asChild>
                   <Link to="/viewings">
-                    <Calendar className="h-5 w-5" />
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Viewings
                   </Link>
                 </Button>
-                <Button variant="ghost" size="icon" asChild>
+                <Button variant="ghost" asChild>
                   <Link to="/communications">
-                    <MessageSquare className="h-5 w-5" />
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Messages
                   </Link>
                 </Button>
-                <Link to="/clients">
-                  <Button variant="ghost">
+                <Button variant="ghost" asChild>
+                  <Link to="/clients">
                     <Users className="h-4 w-4 mr-2" />
                     Clients
-                  </Button>
-                </Link>
-                <Button variant="ghost" size="icon" asChild>
+                  </Link>
+                </Button>
+                <Button variant="ghost" asChild>
                   <Link to="/assistant">
-                    <Bot className="h-5 w-5" />
+                    <Bot className="h-4 w-4 mr-2" />
+                    Assistant
                   </Link>
                 </Button>
                 <Button onClick={handleSignOut} variant="outline">
@@ -66,9 +69,10 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Button variant="ghost" size="icon" asChild>
+                <Button variant="ghost" asChild>
                   <Link to="/assistant">
-                    <Bot className="h-5 w-5" />
+                    <Bot className="h-4 w-4 mr-2" />
+                    Assistant
                   </Link>
                 </Button>
                 <Link to="/auth">

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { MessageSquare } from "lucide-react";
+import { Bot } from "lucide-react";
 import { ChatHeader } from "../chat/ChatHeader";
 import { AIChatContent } from "./AIChatContent";
 import { AIChatContainerProps, AIChatContentProps } from "./types";
@@ -48,7 +48,7 @@ export const AIChatContainer = ({
           className="rounded-full h-14 w-14 shadow-lg"
           onClick={handleOpen}
         >
-          <MessageSquare className="h-6 w-6" />
+          <Bot className="h-6 w-6" />
         </Button>
       )}
     </div>
