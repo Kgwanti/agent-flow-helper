@@ -73,11 +73,12 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         fadeIn: "fadeIn 0.5s ease-out",
-        "gradient-slow": "gradient 15s ease infinite",
-        border: "gradient 3s linear infinite",
+        "gradient-slow": "gradient 8s ease infinite",  // Increased speed from 15s to 8s
+        border: "gradient 2s linear infinite",  // Increased speed from 3s to 2s
       },
       backgroundSize: {
         "300%": "300%",
+        "400%": "400%",  // Added larger background size for more dramatic effect
       },
     },
   },
