@@ -1,19 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, RefreshCw, Home } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ViewingAppointment } from "@/types/viewing";
-import { ViewingAppointmentsTable } from "@/components/viewing/ViewingAppointmentsTable";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { ViewingHeader } from "@/components/viewing/ViewingHeader";
+import { ViewingContent } from "@/components/viewing/ViewingContent";
 import Navbar from "@/components/Navbar";
 
 const Viewings = () => {
@@ -94,57 +85,17 @@ const Viewings = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      {/* Added pb-20 to create space for the sign out button */}
       <div className="container mx-auto py-8 pb-20">
-        <Breadcrumb className="mb-6">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/" className="flex items-center gap-2">
-                <Home className="h-4 w-4" />
-                Home
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Viewing Appointments</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="ghost"
-            className="gap-2"
-            onClick={() => navigate("/")}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Back
-          </Button>
-          <h1 className="text-2xl font-bold">Viewing Appointments</h1>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className={refreshing ? "animate-spin" : ""}
-          >
-            <RefreshCw className="h-4 w-4" />
-            <span className="sr-only">Refresh appointments</span>
-          </Button>
-        </div>
-
-        {loading ? (
-          <div className="text-center">Loading appointments...</div>
-        ) : appointments.length === 0 ? (
-          <div className="text-center text-muted-foreground">
-            No viewing appointments found
-          </div>
-        ) : (
-          <ViewingAppointmentsTable
-            appointments={appointments}
-            onDelete={handleDelete}
-          />
-        )}
+        <ViewingHeader 
+          onRefresh={handleRefresh}
+          onBack={() => navigate("/")}
+          refreshing={refreshing}
+        />
+        <ViewingContent 
+          loading={loading}
+          appointments={appointments}
+          onDelete={handleDelete}
+        />
       </div>
     </div>
   );
