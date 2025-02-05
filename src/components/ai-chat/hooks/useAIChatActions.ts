@@ -92,6 +92,15 @@ export const useAIChatActions = ({
 
       if (error) throw error;
 
+      // Log the email communication
+      await supabase
+        .from('communication_logs')
+        .insert([{
+          profile_id: userId,
+          message_type: 'email',
+          content: `Email sent: ${emailConfirmation.content}`
+        }]);
+
       toast({
         title: "Email Sent",
         description: "A copy of this conversation has been sent to your email.",
