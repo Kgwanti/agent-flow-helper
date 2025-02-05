@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare, Home } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,12 +17,13 @@ import {
 const Communications = () => {
   const [communications, setCommunications] = useState<Tables<"communication_logs">[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchCommunications = async () => {
       const { data, error } = await supabase
         .from("communication_logs")
-        .select("*")
+        .select("*, profile:profiles(first_name, last_name, email)")
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -34,7 +36,44 @@ const Communications = () => {
     };
 
     fetchCommunications();
-  }, []);
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'communication_logs'
+        },
+        async (payload) => {
+          console.log('Real-time update received:', payload);
+          
+          // Fetch the complete record including profile information
+          if (payload.eventType === 'INSERT') {
+            const { data: newLog } = await supabase
+              .from("communication_logs")
+              .select("*, profile:profiles(first_name, last_name, email)")
+              .eq('id', payload.new.id)
+              .single();
+
+            if (newLog) {
+              setCommunications(prev => [newLog, ...prev]);
+              toast({
+                title: "New Communication",
+                description: `New ${payload.new.message_type} sent`,
+              });
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [toast]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -76,9 +115,16 @@ const Communications = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">{comm.content}</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    {new Date(comm.created_at).toLocaleString()}
-                  </p>
+                  <div className="flex justify-between items-center mt-4">
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(comm.created_at).toLocaleString()}
+                    </p>
+                    {comm.profile && (
+                      <p className="text-sm text-muted-foreground">
+                        Sent to: {comm.profile.first_name} {comm.profile.last_name} ({comm.profile.email})
+                      </p>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             ))}
