@@ -13,49 +13,58 @@ const corsHeaders = {
 
 const supabase = createClient(supabaseUrl!, supabaseServiceKey!);
 
-async function sendReminderEmail(
-  email: string,
+function generateEmailContent(
   firstName: string,
   address: string,
   viewingDate: string,
   viewingTime: string,
   reminderType: "week" | "day" | "hour"
 ) {
-  const subject = {
-    week: "Upcoming Viewing Next Week",
-    day: "Your Viewing is Tomorrow",
-    hour: "Your Viewing is in 1 Hour",
-  }[reminderType];
-
   const timeframe = {
     week: "next week",
     day: "tomorrow",
     hour: "in 1 hour",
   }[reminderType];
 
-  try {
-    await resend.emails.send({
-      from: "Real Estate Assistant <onboarding@resend.dev>",
-      to: [email],
-      subject,
-      html: `
-        <h1>Viewing Reminder</h1>
-        <p>Hello ${firstName},</p>
-        <p>This is a reminder that you have a property viewing scheduled ${timeframe}.</p>
-        <p><strong>Details:</strong></p>
+  const subject = {
+    week: "Upcoming Property Viewing Next Week",
+    day: "Your Property Viewing is Tomorrow",
+    hour: "Your Property Viewing is in 1 Hour",
+  }[reminderType];
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h1 style="color: #333;">Property Viewing Reminder</h1>
+      <p>Hello ${firstName},</p>
+      <p>This is a friendly reminder about your upcoming property viewing ${timeframe}.</p>
+      
+      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
+        <h2 style="color: #2c5282; margin-top: 0;">Viewing Details</h2>
+        <p><strong>Property:</strong> ${address}</p>
+        <p><strong>Date:</strong> ${viewingDate}</p>
+        <p><strong>Time:</strong> ${viewingTime}</p>
+      </div>
+
+      <div style="margin: 20px 0;">
+        <h3 style="color: #2c5282;">Important Notes</h3>
         <ul>
-          <li>Property: ${address}</li>
-          <li>Date: ${viewingDate}</li>
-          <li>Time: ${viewingTime}</li>
+          <li>Please arrive 5-10 minutes before your scheduled time</li>
+          <li>Bring a valid form of identification</li>
+          <li>Feel free to take photos during the viewing</li>
+          <li>Don't hesitate to ask questions about the property</li>
         </ul>
-        <p>If you need to reschedule or have any questions, please contact us.</p>
-        <p>Best regards,<br>Your Real Estate Team</p>
-      `,
-    });
-    console.log(`Sent ${reminderType} reminder email to ${email}`);
-  } catch (error) {
-    console.error(`Failed to send ${reminderType} reminder email to ${email}:`, error);
-  }
+      </div>
+
+      <p>If you need to reschedule or have any questions, please contact us immediately.</p>
+      
+      <p style="margin-top: 30px;">
+        Best regards,<br>
+        Your Real Estate Team
+      </p>
+    </div>
+  `;
+
+  return { subject, html };
 }
 
 async function processReminders() {
@@ -89,39 +98,58 @@ async function processReminders() {
 
     // Send 1-week reminder
     if (hoursUntilViewing >= 167 && hoursUntilViewing <= 169) {
-      await sendReminderEmail(
-        viewing.profile.email,
+      const { subject, html } = generateEmailContent(
         viewing.profile.first_name,
         viewing.address || "Address not provided",
         viewing.viewing_date,
         viewing.viewing_time,
         "week"
       );
+      
+      await sendReminderEmail(viewing.profile.email, subject, html);
+      console.log(`Sent week reminder to ${viewing.profile.email}`);
     }
 
     // Send 1-day reminder
     if (hoursUntilViewing >= 23 && hoursUntilViewing <= 25) {
-      await sendReminderEmail(
-        viewing.profile.email,
+      const { subject, html } = generateEmailContent(
         viewing.profile.first_name,
         viewing.address || "Address not provided",
         viewing.viewing_date,
         viewing.viewing_time,
         "day"
       );
+      
+      await sendReminderEmail(viewing.profile.email, subject, html);
+      console.log(`Sent day reminder to ${viewing.profile.email}`);
     }
 
     // Send 1-hour reminder
     if (hoursUntilViewing >= 0.9 && hoursUntilViewing <= 1.1) {
-      await sendReminderEmail(
-        viewing.profile.email,
+      const { subject, html } = generateEmailContent(
         viewing.profile.first_name,
         viewing.address || "Address not provided",
         viewing.viewing_date,
         viewing.viewing_time,
         "hour"
       );
+      
+      await sendReminderEmail(viewing.profile.email, subject, html);
+      console.log(`Sent hour reminder to ${viewing.profile.email}`);
     }
+  }
+}
+
+async function sendReminderEmail(email: string, subject: string, html: string) {
+  try {
+    await resend.emails.send({
+      from: "Real Estate Assistant <onboarding@resend.dev>",
+      to: [email],
+      subject,
+      html,
+    });
+  } catch (error) {
+    console.error(`Failed to send reminder email to ${email}:`, error);
   }
 }
 
