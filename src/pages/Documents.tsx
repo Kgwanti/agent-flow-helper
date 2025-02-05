@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FileUp, Loader2, Trash2 } from "lucide-react";
+import { FileUp, Loader2, Trash2, Home } from "lucide-react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import Navbar from "@/components/Navbar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const Documents = () => {
   const [uploading, setUploading] = useState(false);
@@ -99,6 +107,21 @@ const Documents = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/" className="flex items-center gap-2">
+                <Home className="h-4 w-4" />
+                Home
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Documents</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Documents</h1>
           <Button

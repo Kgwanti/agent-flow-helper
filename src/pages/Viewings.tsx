@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, RefreshCw } from "lucide-react";
+import { ChevronLeft, RefreshCw, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ViewingAppointment } from "@/types/viewing";
 import { ViewingAppointmentsTable } from "@/components/viewing/ViewingAppointmentsTable";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import Navbar from "@/components/Navbar";
 
 const Viewings = () => {
   const [appointments, setAppointments] = useState<ViewingAppointment[]>([]);
@@ -83,41 +92,59 @@ const Viewings = () => {
   }, []);
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex items-center gap-4 mb-6">
-        <Button
-          variant="ghost"
-          className="gap-2"
-          onClick={() => navigate("/")}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Back
-        </Button>
-        <h1 className="text-2xl font-bold">Viewing Appointments</h1>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className={refreshing ? "animate-spin" : ""}
-        >
-          <RefreshCw className="h-4 w-4" />
-          <span className="sr-only">Refresh appointments</span>
-        </Button>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <div className="container mx-auto py-8">
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/" className="flex items-center gap-2">
+                <Home className="h-4 w-4" />
+                Home
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Viewing Appointments</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
-      {loading ? (
-        <div className="text-center">Loading appointments...</div>
-      ) : appointments.length === 0 ? (
-        <div className="text-center text-muted-foreground">
-          No viewing appointments found
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            variant="ghost"
+            className="gap-2"
+            onClick={() => navigate("/")}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Back
+          </Button>
+          <h1 className="text-2xl font-bold">Viewing Appointments</h1>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className={refreshing ? "animate-spin" : ""}
+          >
+            <RefreshCw className="h-4 w-4" />
+            <span className="sr-only">Refresh appointments</span>
+          </Button>
         </div>
-      ) : (
-        <ViewingAppointmentsTable
-          appointments={appointments}
-          onDelete={handleDelete}
-        />
-      )}
+
+        {loading ? (
+          <div className="text-center">Loading appointments...</div>
+        ) : appointments.length === 0 ? (
+          <div className="text-center text-muted-foreground">
+            No viewing appointments found
+          </div>
+        ) : (
+          <ViewingAppointmentsTable
+            appointments={appointments}
+            onDelete={handleDelete}
+          />
+        )}
+      </div>
     </div>
   );
 };

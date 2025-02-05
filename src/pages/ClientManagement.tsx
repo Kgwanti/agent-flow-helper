@@ -18,7 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users } from "lucide-react";
+import { Users, Home } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -27,6 +27,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import Navbar from "@/components/Navbar";
 
 interface Profile {
   id: string;
@@ -78,16 +79,20 @@ const ClientManagement = () => {
   }, [toast]);
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <div className="max-w-6xl mx-auto p-6">
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              <BreadcrumbLink href="/" className="flex items-center gap-2">
+                <Home className="h-4 w-4" />
+                Home
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Clients</BreadcrumbPage>
+              <BreadcrumbPage>Client Management</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
