@@ -36,7 +36,7 @@ serve(async (req) => {
         'X-Title': 'NexData Solutions'
       },
       body: JSON.stringify({
-        model: 'deepseek/free-r1',
+        model: 'deepseek-coder/33b-instruct',
         messages: [
           {
             role: 'system',
