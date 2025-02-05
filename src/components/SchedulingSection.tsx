@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +21,7 @@ const SchedulingSection = () => {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleTimeSelection = (time: string) => {
     setSelectedTime(time);
@@ -32,7 +34,18 @@ const SchedulingSection = () => {
       toast({
         variant: "destructive",
         title: "Authentication Required",
-        description: "Please sign in to schedule a viewing.",
+        description: (
+          <div className="flex flex-col gap-4">
+            <p>Please sign in to schedule a viewing.</p>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate("/auth")}
+              className="mt-2"
+            >
+              Sign In
+            </Button>
+          </div>
+        ),
       });
       return;
     }
@@ -55,7 +68,18 @@ const SchedulingSection = () => {
         toast({
           variant: "destructive",
           title: "Authentication Required",
-          description: "Please sign in to schedule a viewing.",
+          description: (
+            <div className="flex flex-col gap-4">
+              <p>Please sign in to schedule a viewing.</p>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate("/auth")}
+                className="mt-2"
+              >
+                Sign In
+              </Button>
+            </div>
+          ),
         });
         return;
       }
