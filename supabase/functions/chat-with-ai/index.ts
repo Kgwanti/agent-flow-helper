@@ -5,34 +5,37 @@ import { fetchUserData } from './userDataService.ts';
 import { generateAIResponse } from './aiService.ts';
 import { sendEmailTranscript } from './emailService.ts';
 
-const supabaseUrl = Deno.env.get('SUPABASE_URL');
-const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Missing Supabase credentials');
+    }
+
     const { message, userId, sendEmail = false } = await req.json();
-    console.log('Received request with message:', message, 'userId:', userId);
-    
+    console.log('Received request:', { message, userId, sendEmail });
+
     if (!message) {
       throw new Error('No message provided');
     }
 
-    if (!supabaseUrl || !supabaseServiceKey) {
-      throw new Error('Supabase credentials not configured');
-    }
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Fetch user data for context
     const userData = await fetchUserData(userId);
-    console.log('Successfully fetched user data');
+    console.log('Fetched user data successfully');
 
     const userContext = `
 Current user: ${userData.profile?.first_name || 'User'} ${userData.profile?.last_name || ''}
@@ -56,9 +59,11 @@ Documents: ${userData.documents?.length ?
   userData.documents.map(d => `\n- ${d.filename}`).join('')
   : 'No documents uploaded'}`;
 
+    // Generate AI response
     const aiResponse = await generateAIResponse(message, userContext);
-    console.log('Successfully received response from OpenRouter API');
+    console.log('Generated AI response successfully');
 
+    // Handle email sending if requested
     if (sendEmail && userData.profile?.email) {
       await sendEmailTranscript(
         userData.profile.email,
@@ -66,8 +71,10 @@ Documents: ${userData.documents?.length ?
         message,
         aiResponse
       );
+      console.log('Email sent successfully');
     }
 
+    // Log the interaction
     await supabase
       .from('communication_logs')
       .insert([{
@@ -75,12 +82,13 @@ Documents: ${userData.documents?.length ?
         message_type: 'ai_chat',
         content: message
       }]);
+    console.log('Logged communication successfully');
 
     return new Response(
       JSON.stringify({ response: aiResponse }),
       {
         headers: { 
-          ...corsHeaders, 
+          ...corsHeaders,
           'Content-Type': 'application/json'
         },
       }
