@@ -57,9 +57,9 @@ serve(async (req) => {
         .from('document_analysis')
         .insert({
           document_id: documentId,
-          analysis_type: action,
           content: aiResponse,
-          profile_id: userId
+          profile_id: userId,
+          analysis_type: action // Store the analysis type
         });
 
       if (analysisError) throw analysisError;

@@ -108,6 +108,7 @@ export type Database = {
       }
       document_analysis: {
         Row: {
+          analysis_type: string
           created_at: string
           document_id: string
           extracted_info: Json | null
@@ -115,6 +116,7 @@ export type Database = {
           summary: string | null
         }
         Insert: {
+          analysis_type: string
           created_at?: string
           document_id: string
           extracted_info?: Json | null
@@ -122,6 +124,7 @@ export type Database = {
           summary?: string | null
         }
         Update: {
+          analysis_type?: string
           created_at?: string
           document_id?: string
           extracted_info?: Json | null
