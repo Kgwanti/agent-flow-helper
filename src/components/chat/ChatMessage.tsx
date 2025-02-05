@@ -20,8 +20,8 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
             : 'bg-muted text-foreground'
         }`}
       >
-        <ScrollArea className="h-full max-h-[300px] w-full">
-          <div className="text-sm whitespace-pre-wrap break-words">
+        <ScrollArea className="h-full max-h-[300px] w-[300px] md:w-[400px]">
+          <div className="text-sm whitespace-pre-wrap break-words pr-4">
             {message.content}
           </div>
         </ScrollArea>
