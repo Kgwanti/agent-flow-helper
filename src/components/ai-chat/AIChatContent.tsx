@@ -24,17 +24,17 @@ export const AIChatContent = ({
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTo({
-        top: scrollRef.current.scrollHeight,
-        behavior: "smooth",
-      });
+      const scrollElement = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollElement) {
+        scrollElement.scrollTop = scrollElement.scrollHeight;
+      }
     }
   }, [messages, isLoading]);
 
   return (
     <>
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-        <div className="space-y-4">
+      <ScrollArea className="flex-1 p-4 h-full" ref={scrollRef}>
+        <div className="space-y-4 min-h-full">
           <div className="bg-muted rounded-lg p-3 relative">
             <p className="text-sm pr-8">{greeting}</p>
             <Button
