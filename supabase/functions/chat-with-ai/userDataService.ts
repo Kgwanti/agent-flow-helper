@@ -2,6 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 
 export interface UserData {
   profile: any;
@@ -52,6 +53,23 @@ export const fetchUserData = async (userId: string): Promise<UserData> => {
       .eq('profile_id', userId)
       .order('created_at', { ascending: false })
   ]);
+
+  // Send welcome email for new users
+  if (profileResult.data) {
+    try {
+      const supabaseClient = createClient(supabaseUrl, supabaseAnonKey!);
+      await supabaseClient.functions.invoke('send-welcome-email', {
+        body: {
+          email: profileResult.data.email,
+          firstName: profileResult.data.first_name,
+          lastName: profileResult.data.last_name,
+        },
+      });
+    } catch (error) {
+      console.error('Error sending welcome email:', error);
+      // Don't throw the error as we don't want to break the user creation process
+    }
+  }
 
   return {
     profile: profileResult.data,
