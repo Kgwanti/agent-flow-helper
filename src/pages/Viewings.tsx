@@ -18,6 +18,7 @@ interface ViewingAppointment {
   id: string;
   viewing_date: string;
   viewing_time: string;
+  address: string | null;
   profile: {
     first_name: string | null;
     last_name: string | null;
@@ -41,6 +42,7 @@ const Viewings = () => {
             id,
             viewing_date,
             viewing_time,
+            address,
             profile:profiles (
               first_name,
               last_name,
@@ -95,6 +97,7 @@ const Viewings = () => {
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>Time</TableHead>
+                <TableHead>Address</TableHead>
                 <TableHead>Client Name</TableHead>
                 <TableHead>Contact</TableHead>
               </TableRow>
@@ -106,6 +109,7 @@ const Viewings = () => {
                     {format(new Date(appointment.viewing_date), "PPP")}
                   </TableCell>
                   <TableCell>{appointment.viewing_time}</TableCell>
+                  <TableCell>{appointment.address || "N/A"}</TableCell>
                   <TableCell>
                     {appointment.profile
                       ? `${appointment.profile.first_name || ""} ${

@@ -117,6 +117,7 @@ export type Database = {
       }
       viewing_appointments: {
         Row: {
+          address: string | null
           created_at: string
           id: string
           profile_id: string | null
@@ -125,6 +126,7 @@ export type Database = {
           viewing_time: string
         }
         Insert: {
+          address?: string | null
           created_at?: string
           id?: string
           profile_id?: string | null
@@ -133,6 +135,7 @@ export type Database = {
           viewing_time: string
         }
         Update: {
+          address?: string | null
           created_at?: string
           id?: string
           profile_id?: string | null
