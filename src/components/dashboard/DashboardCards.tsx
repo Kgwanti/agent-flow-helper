@@ -8,7 +8,7 @@ const DashboardCards = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <Card 
-        className="hover:shadow-lg transition-shadow cursor-pointer" 
+        className="hover:shadow-lg transition-shadow cursor-pointer bg-white/100 backdrop-blur-sm" 
         onClick={() => navigate("/clients")}
       >
         <CardHeader>
@@ -25,7 +25,7 @@ const DashboardCards = () => {
       </Card>
 
       <Card 
-        className="hover:shadow-lg transition-shadow cursor-pointer" 
+        className="hover:shadow-lg transition-shadow cursor-pointer bg-white/100 backdrop-blur-sm" 
         onClick={() => navigate("/viewings")}
       >
         <CardHeader>
@@ -42,7 +42,7 @@ const DashboardCards = () => {
       </Card>
 
       <Card 
-        className="hover:shadow-lg transition-shadow cursor-pointer"
+        className="hover:shadow-lg transition-shadow cursor-pointer bg-white/100 backdrop-blur-sm"
         onClick={() => navigate("/communications")}
       >
         <CardHeader>
