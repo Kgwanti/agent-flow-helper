@@ -24,14 +24,18 @@ const AIChatAssistant = () => {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('first_name')
-          .eq('id', session.user.id)
-          .single();
-        setUserProfile(profile);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('first_name')
+            .eq('id', session.user.id)
+            .maybeSingle();
+          setUserProfile(profile);
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
       }
     };
 
@@ -52,7 +56,7 @@ const AIChatAssistant = () => {
     if (userProfile?.first_name) {
       return `Hi ${userProfile.first_name}! ${greeting}`;
     }
-    return greeting;
+    return greeting || "Hello! How can I help you with your real estate needs today?";
   };
 
   return (
