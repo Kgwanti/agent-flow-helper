@@ -1,6 +1,7 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FileUp, Loader2, Trash2, Home } from "lucide-react";
+import { FileUp, Loader2, Trash2, FileSearch, FileText, Home } from "lucide-react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import {
 
 const Documents = () => {
   const [uploading, setUploading] = useState(false);
+  const [analyzing, setAnalyzing] = useState<string | null>(null);
   const { toast } = useToast();
 
   const { data: documents, refetch } = useQuery({
@@ -103,6 +105,37 @@ const Documents = () => {
     }
   };
 
+  const handleAnalyze = async (documentId: string, action: 'analyze' | 'summarize') => {
+    try {
+      setAnalyzing(documentId);
+      const { data: user } = await supabase.auth.getUser();
+      
+      const response = await supabase.functions.invoke('chat-with-ai', {
+        body: {
+          documentId,
+          action,
+          userId: user.user?.id
+        },
+      });
+
+      if (response.error) throw response.error;
+
+      toast({
+        title: "Success",
+        description: `Document ${action === 'analyze' ? 'analysis' : 'summary'} completed`,
+      });
+    } catch (error) {
+      console.error(`Error ${action}ing document:`, error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to ${action} document. Please try again.`,
+      });
+    } finally {
+      setAnalyzing(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -173,7 +206,33 @@ const Documents = () => {
                     <td className="px-6 py-4 text-sm">
                       {format(new Date(doc.created_at), "PPp")}
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-right flex justify-end items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-blue-600 hover:text-blue-700"
+                        onClick={() => handleAnalyze(doc.id, 'analyze')}
+                        disabled={analyzing === doc.id}
+                      >
+                        {analyzing === doc.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <FileSearch className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-green-600 hover:text-green-700"
+                        onClick={() => handleAnalyze(doc.id, 'summarize')}
+                        disabled={analyzing === doc.id}
+                      >
+                        {analyzing === doc.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <FileText className="h-4 w-4" />
+                        )}
+                      </Button>
                       <Button
                         variant="ghost"
                         size="sm"
