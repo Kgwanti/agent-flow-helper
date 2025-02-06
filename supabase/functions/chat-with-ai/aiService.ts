@@ -1,4 +1,3 @@
-
 const OPENROUTER_API_KEY = Deno.env.get('OPENROUTER_API_KEY');
 
 export async function generateAIResponse(message: string, context: string) {
@@ -6,39 +5,58 @@ export async function generateAIResponse(message: string, context: string) {
     throw new Error('OpenRouter API key not configured');
   }
 
-  // Add special handling for "help" command
-  if (message.toLowerCase().trim() === 'help') {
-    return `I'm your AI real estate assistant, and here's how I can help you:
+  // Add special handling for help request variations
+  const helpPhrases = [
+    'what can you help me with',
+    'what can you do',
+    'help',
+    'how can you help',
+    'what are your capabilities'
+  ];
 
-1. 📅 Viewing Management:
-   - Check your scheduled property viewings
-   - Set up new viewing appointments
-   - Send viewing reminders to clients and agents
+  if (helpPhrases.includes(message.toLowerCase().trim())) {
+    return `I'm your dedicated real estate assistant, and here's how I can help you:
 
-2. 📧 Communication:
-   - Send automated emails to clients
-   - Handle routine client inquiries
-   - Manage all client communications in one place
+1. 🏠 Property Search and Recommendations
+   - Search properties by location, price, and bedrooms
+   - Get personalized recommendations based on your preferences
 
-3. 📄 Document Management:
-   - Access and review uploaded documents
-   - Generate contracts and agreements
-   - Extract and analyze key information from documents
-   - Monitor document versions and changes
-   - Review contract drafts and proposals
-   - Track document status and history
+2. 📊 Market Trend Analysis
+   - Current market insights and price trends
+   - Local market conditions, especially in South Africa
+   - Historical price changes and future predictions
 
-4. 📆 Calendar & Reminders:
-   - View your upcoming appointments
-   - Set up automated reminders
-   - Manage your availability
+3. 💰 Financial and Legal Assistance
+   - Mortgage calculations
+   - Property tax estimates
+   - Transfer duties and capital gains tax information
+   - Net proceeds calculations for sellers
 
-5. 👥 Client Management:
-   - Review client information
-   - Track client preferences
-   - Monitor client interactions
+4. 📧 Communication Tools
+   - Draft professional emails to agents/sellers
+   - Negotiation tips and strategies
+   - Pre-written communication templates
 
-Just let me know what you'd like assistance with, and I'll be happy to help!`;
+5. 📝 Step-by-Step Guides and Checklists
+   - First-time buyer/seller guidance
+   - Document checklists
+   - Process walkthroughs
+
+6. 🔔 Real-Time Property Updates
+   - New listing notifications
+   - Price change alerts
+   - Property availability updates
+
+7. 📄 Document Management
+   - Form filling assistance
+   - Digital document organization
+   - Administrative task support
+
+8. 🎯 Personalized Recommendations
+   - Property suggestions based on your preferences
+   - Tailored recommendations from past interactions
+
+Just let me know which area you'd like assistance with, and I'll be happy to help!`;
   }
 
   try {
@@ -54,7 +72,17 @@ Just let me know what you'd like assistance with, and I'll be happy to help!`;
         messages: [
           {
             role: 'system',
-            content: `You are an AI real estate assistant. Use the following context about the user to provide relevant and personalized responses:
+            content: `You are an AI real estate assistant specialized in South African real estate. You can help with:
+            - Property search and recommendations
+            - Market trend analysis
+            - Financial and legal assistance
+            - Communication tools
+            - Step-by-step guides
+            - Real-time property updates
+            - Document management
+            - Personalized recommendations
+            
+            Use the following context about the user to provide relevant and personalized responses:
             
             ${context}
             
