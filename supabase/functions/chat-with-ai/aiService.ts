@@ -15,48 +15,59 @@ export async function generateAIResponse(message: string, context: string) {
   ];
 
   if (helpPhrases.includes(message.toLowerCase().trim())) {
-    return `I'm your dedicated real estate assistant, and here's how I can help you:
+    return `I'm your integrated real estate assistant with direct access to your database and systems. Here's how I can help you:
 
-1. 🏠 Property Search and Recommendations
-   - Search properties by location, price, and bedrooms
-   - Get personalized recommendations based on your preferences
+1. 📧 Automated Client Communications
+   - Send automated emails to clients
+   - Draft and send viewing confirmations
+   - Handle routine client inquiries
+   - Manage client follow-ups
 
-2. 📊 Market Trend Analysis
-   - Current market insights and price trends
-   - Local market conditions, especially in South Africa
-   - Historical price changes and future predictions
+2. 📅 Viewings Management
+   - Access and manage your viewing schedule
+   - Send automated viewing reminders
+   - Track upcoming appointments
+   - Handle viewing rescheduling requests
 
-3. 💰 Financial and Legal Assistance
-   - Mortgage calculations
-   - Property tax estimates
-   - Transfer duties and capital gains tax information
-   - Net proceeds calculations for sellers
+3. 📄 Document Management & Analysis
+   - Store and organize property documents
+   - Extract key dates and information from contracts
+   - Analyze legal documents for important terms
+   - Generate document summaries
+   - Track document status and deadlines
 
-4. 📧 Communication Tools
-   - Draft professional emails to agents/sellers
-   - Negotiation tips and strategies
-   - Pre-written communication templates
+4. 💡 Intelligent Insights
+   - Access market trends and data
+   - Generate property valuations
+   - Analyze client preferences
+   - Track communication history
+   - Monitor property status changes
 
-5. 📝 Step-by-Step Guides and Checklists
-   - First-time buyer/seller guidance
-   - Document checklists
-   - Process walkthroughs
+5. 🏠 Property Information
+   - Search property database
+   - Track property updates
+   - Monitor price changes
+   - Generate property reports
 
-6. 🔔 Real-Time Property Updates
-   - New listing notifications
-   - Price change alerts
-   - Property availability updates
+6. 💼 Administrative Tasks
+   - Generate meeting summaries
+   - Create task reminders
+   - Organize client information
+   - Track important deadlines
 
-7. 📄 Document Management
-   - Form filling assistance
-   - Digital document organization
-   - Administrative task support
+7. 📊 Client Portfolio Management
+   - Track client preferences
+   - Monitor client interactions
+   - Manage client documents
+   - Generate client reports
 
-8. 🎯 Personalized Recommendations
-   - Property suggestions based on your preferences
-   - Tailored recommendations from past interactions
+8. 🤝 Communication Support
+   - Draft professional emails
+   - Create viewing summaries
+   - Generate property descriptions
+   - Compose client updates
 
-Just let me know which area you'd like assistance with, and I'll be happy to help!`;
+Since I'm connected to your database, I can provide real-time information about your clients, properties, and schedule. Just let me know what you need assistance with!`;
   }
 
   try {
@@ -72,15 +83,14 @@ Just let me know which area you'd like assistance with, and I'll be happy to hel
         messages: [
           {
             role: 'system',
-            content: `You are an AI real estate assistant specialized in South African real estate. You can help with:
-            - Property search and recommendations
-            - Market trend analysis
-            - Financial and legal assistance
-            - Communication tools
-            - Step-by-step guides
-            - Real-time property updates
-            - Document management
-            - Personalized recommendations
+            content: `You are an AI real estate assistant specialized in South African real estate. You have direct access to the user's database and can help with:
+            - Automated email communications
+            - Viewing schedule management
+            - Document analysis and management
+            - Client portfolio management
+            - Property information and updates
+            - Administrative tasks
+            - Communication support
             
             Use the following context about the user to provide relevant and personalized responses:
             
