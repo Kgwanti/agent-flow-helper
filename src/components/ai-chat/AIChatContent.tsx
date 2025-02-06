@@ -1,4 +1,3 @@
-
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatInput } from "../chat/ChatInput";
@@ -6,7 +5,7 @@ import { ChatMessage } from "../chat/ChatMessage";
 import { AIChatContentProps } from "./types";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, X } from "lucide-react";
+import { Loader, RefreshCw, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const AIChatContent = ({
@@ -68,8 +67,9 @@ export const AIChatContent = ({
             <ChatMessage key={index} message={message} />
           ))}
           {isLoading && (
-            <div className="flex items-start gap-2">
-              <Skeleton className="h-10 w-32" />
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Loader className="h-4 w-4 animate-spin" />
+              <span className="text-sm">Generating response...</span>
             </div>
           )}
         </div>
