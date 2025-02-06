@@ -15,59 +15,35 @@ export async function generateAIResponse(message: string, context: string) {
   ];
 
   if (helpPhrases.includes(message.toLowerCase().trim())) {
-    return `I'm your integrated real estate assistant with direct access to your database and systems. Here's how I can help you:
+    return `**AI Chatbot Response:**
 
-1. 📧 Automated Client Communications
-   - Send automated emails to clients
-   - Draft and send viewing confirmations
-   - Handle routine client inquiries
-   - Manage client follow-ups
+I'm your integrated real estate assistant with direct access to your database and systems. Here's how I can help you:
 
-2. 📅 Viewings Management
-   - Access and manage your viewing schedule
-   - Send automated viewing reminders
-   - Track upcoming appointments
-   - Handle viewing rescheduling requests
+1. 📧 Automated Client Communications  
+   - Send automated emails to clients  
+   - Draft and send viewing confirmations  
+   - Handle routine client inquiries  
+   - Manage client follow-ups  
 
-3. 📄 Document Management & Analysis
-   - Store and organize property documents
-   - Extract key dates and information from contracts
-   - Analyze legal documents for important terms
-   - Generate document summaries
-   - Track document status and deadlines
+2. 📅 Viewings Management  
+   - Access and manage your viewing schedule  
+   - Send automated viewing reminders  
+   - Track upcoming appointments  
+   - Handle viewing rescheduling requests  
 
-4. 💡 Intelligent Insights
-   - Access market trends and data
-   - Generate property valuations
-   - Analyze client preferences
-   - Track communication history
-   - Monitor property status changes
+3. 🧩 Client Management  
+   - Organize and maintain your client list  
+   - Update client contact details  
+   - Manage client relationships and interactions  
+   - Create new client profiles  
 
-5. 🏠 Property Information
-   - Search property database
-   - Track property updates
-   - Monitor price changes
-   - Generate property reports
+4. 📄 Document Management  
+   - Analyze and summarize real estate documents  
+   - Draft lease agreements and FICA documents  
+   - Streamline and automate document processes  
+   - Ensure compliance with legal requirements  
 
-6. 💼 Administrative Tasks
-   - Generate meeting summaries
-   - Create task reminders
-   - Organize client information
-   - Track important deadlines
-
-7. 📊 Client Portfolio Management
-   - Track client preferences
-   - Monitor client interactions
-   - Manage client documents
-   - Generate client reports
-
-8. 🤝 Communication Support
-   - Draft professional emails
-   - Create viewing summaries
-   - Generate property descriptions
-   - Compose client updates
-
-Since I'm connected to your database, I can provide real-time information about your clients, properties, and schedule. Just let me know what you need assistance with!`;
+How can I assist you today?`;
   }
 
   try {
@@ -88,9 +64,6 @@ Since I'm connected to your database, I can provide real-time information about 
             - Viewing schedule management
             - Document analysis and management
             - Client portfolio management
-            - Property information and updates
-            - Administrative tasks
-            - Communication support
             
             Use the following context about the user to provide relevant and personalized responses:
             
