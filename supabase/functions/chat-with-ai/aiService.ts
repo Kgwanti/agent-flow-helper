@@ -15,9 +15,7 @@ export async function generateAIResponse(message: string, context: string) {
   ];
 
   if (helpPhrases.includes(message.toLowerCase().trim())) {
-    return `**AI Chatbot Response:**
-
-I'm your integrated real estate assistant with direct access to your database and systems. Here's how I can help you:
+    return `I'm your integrated real estate assistant with direct access to your database and systems. Here's how I can help you:
 
 1. 📧 Automated Client Communications  
    - Send automated emails to clients  
