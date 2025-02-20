@@ -1,6 +1,7 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Users, Calendar, MessageSquare, Bot, FileText } from "lucide-react";
+import { Users, Calendar, MessageSquare, Bot, FileText, DollarSign } from "lucide-react";
 
 interface NavLinksProps {
   isAuthenticated: boolean;
@@ -26,6 +27,12 @@ const NavLinks = ({ isAuthenticated }: NavLinksProps) => {
           <Link to="/clients">
             <Users className="h-4 w-4" />
             <span>Clients</span>
+          </Link>
+        </Button>
+        <Button variant="ghost" size="default" className="gap-2 min-w-[100px] text-sm" asChild>
+          <Link to="/deals">
+            <DollarSign className="h-4 w-4" />
+            <span>Deals</span>
           </Link>
         </Button>
         <Button variant="ghost" size="default" className="gap-2 min-w-[120px] text-sm" asChild>

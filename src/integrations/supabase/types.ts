@@ -106,6 +106,66 @@ export type Database = {
           },
         ]
       }
+      deals: {
+        Row: {
+          agent_id: string | null
+          amount: number
+          client_id: string | null
+          created_at: string | null
+          expected_close_date: string | null
+          id: string
+          last_activity_date: string | null
+          notes: string | null
+          property_address: string | null
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          amount: number
+          client_id?: string | null
+          created_at?: string | null
+          expected_close_date?: string | null
+          id?: string
+          last_activity_date?: string | null
+          notes?: string | null
+          property_address?: string | null
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          amount?: number
+          client_id?: string | null
+          created_at?: string | null
+          expected_close_date?: string | null
+          id?: string
+          last_activity_date?: string | null
+          notes?: string | null
+          property_address?: string | null
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_analysis: {
         Row: {
           analysis_type: string
@@ -252,7 +312,14 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      deal_status_stats: {
+        Row: {
+          count: number | null
+          status: string | null
+          total_amount: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       clean_past_appointments: {
@@ -267,7 +334,15 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      deal_status:
+        | "INITIAL_CONTACT"
+        | "VIEWING_SCHEDULED"
+        | "OFFER_MADE"
+        | "NEGOTIATION"
+        | "AGREEMENT_PENDING"
+        | "CONTRACT_SIGNED"
+        | "CLOSED_WON"
+        | "CLOSED_LOST"
     }
     CompositeTypes: {
       [_ in never]: never
