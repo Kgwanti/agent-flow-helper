@@ -53,7 +53,7 @@ const DealBoard = () => {
           amount,
           status,
           last_activity_date,
-          client:client_id(
+          client:profiles!deals_client_id_fkey(
             first_name,
             last_name,
             email
