@@ -6,13 +6,13 @@ interface DealCardProps {
   deal: {
     id: string;
     title: string;
-    property_address: string;
+    property_address: string | null;
     amount: number;
-    last_activity_date: string;
+    last_activity_date: string | null;
     client: {
-      first_name: string;
-      last_name: string;
-      email: string;
+      first_name: string | null;
+      last_name: string | null;
+      email: string | null;
     } | null;
   };
 }
@@ -23,7 +23,7 @@ const DealCard = ({ deal }: DealCardProps) => {
       <CardHeader className="p-4">
         <div className="font-semibold truncate">{deal.title}</div>
         <div className="text-sm text-muted-foreground truncate">
-          {deal.property_address}
+          {deal.property_address || 'No address provided'}
         </div>
       </CardHeader>
       <CardContent className="p-4 pt-0">
@@ -36,7 +36,9 @@ const DealCard = ({ deal }: DealCardProps) => {
           </div>
         )}
         <div className="text-xs text-muted-foreground mt-2">
-          Last activity: {formatDistance(new Date(deal.last_activity_date), new Date(), { addSuffix: true })}
+          Last activity: {deal.last_activity_date 
+            ? formatDistance(new Date(deal.last_activity_date), new Date(), { addSuffix: true })
+            : 'Never'}
         </div>
       </CardContent>
     </Card>

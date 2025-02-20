@@ -26,6 +26,20 @@ const statusLabels: Record<typeof DEAL_STATUSES[number], string> = {
   CLOSED_LOST: 'Closed Lost'
 };
 
+interface Deal {
+  id: string;
+  title: string;
+  property_address: string | null;
+  amount: number;
+  status: typeof DEAL_STATUSES[number];
+  last_activity_date: string | null;
+  client: {
+    first_name: string | null;
+    last_name: string | null;
+    email: string | null;
+  } | null;
+}
+
 const DealBoard = () => {
   const { data: deals = [] } = useQuery({
     queryKey: ['deals'],
@@ -33,7 +47,12 @@ const DealBoard = () => {
       const { data, error } = await supabase
         .from('deals')
         .select(`
-          *,
+          id,
+          title,
+          property_address,
+          amount,
+          status,
+          last_activity_date,
           client:client_id(
             first_name,
             last_name,
@@ -43,7 +62,7 @@ const DealBoard = () => {
         .order('last_activity_date', { ascending: false });
       
       if (error) throw error;
-      return data;
+      return data as Deal[];
     }
   });
 
