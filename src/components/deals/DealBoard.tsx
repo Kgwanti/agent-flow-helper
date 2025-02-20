@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import DealCard from "./DealCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
+import { Bell, Clock, Settings } from "lucide-react";
 import { useState } from "react";
 import EditDealStageDialog from "./EditDealStageDialog";
 
@@ -24,6 +24,8 @@ interface DealStage {
   title: string;
   notes: string;
   amount: number;
+  bgColor: string;
+  lightBgColor: string;
 }
 
 const defaultStages: Record<typeof DEAL_STATUSES[number], DealStage> = {
@@ -31,49 +33,65 @@ const defaultStages: Record<typeof DEAL_STATUSES[number], DealStage> = {
     status: 'INITIAL_CONTACT',
     title: 'Initial Contact',
     notes: 'First contact with potential client',
-    amount: 0
+    amount: 0,
+    bgColor: 'bg-[#F2FCE2]',
+    lightBgColor: 'hover:bg-[#E2ECE2]'
   },
   VIEWING_SCHEDULED: {
     status: 'VIEWING_SCHEDULED',
     title: 'Viewing Scheduled',
     notes: 'Property viewing arranged',
-    amount: 0
+    amount: 0,
+    bgColor: 'bg-[#FEF7CD]',
+    lightBgColor: 'hover:bg-[#EEE7BD]'
   },
   OFFER_MADE: {
     status: 'OFFER_MADE',
     title: 'Offer Made',
     notes: 'Client has made an offer',
-    amount: 0
+    amount: 0,
+    bgColor: 'bg-[#FEC6A1]',
+    lightBgColor: 'hover:bg-[#EEB691]'
   },
   NEGOTIATION: {
     status: 'NEGOTIATION',
     title: 'Negotiation',
     notes: 'Negotiating terms with client',
-    amount: 0
+    amount: 0,
+    bgColor: 'bg-[#E5DEFF]',
+    lightBgColor: 'hover:bg-[#D5CEEF]'
   },
   AGREEMENT_PENDING: {
     status: 'AGREEMENT_PENDING',
     title: 'Agreement Pending',
     notes: 'Waiting for agreement finalization',
-    amount: 0
+    amount: 0,
+    bgColor: 'bg-[#FFDEE2]',
+    lightBgColor: 'hover:bg-[#EFCED2]'
   },
   CONTRACT_SIGNED: {
     status: 'CONTRACT_SIGNED',
     title: 'Contract Signed',
     notes: 'Deal contract has been signed',
-    amount: 0
+    amount: 0,
+    bgColor: 'bg-[#D3E4FD]',
+    lightBgColor: 'hover:bg-[#C3D4ED]'
   },
   CLOSED_WON: {
     status: 'CLOSED_WON',
     title: 'Closed Won',
     notes: 'Deal successfully closed',
-    amount: 0
+    amount: 0,
+    bgColor: 'bg-[#0EA5E9]',
+    lightBgColor: 'hover:bg-[#0E95D9]'
   },
   CLOSED_LOST: {
     status: 'CLOSED_LOST',
     title: 'Closed Lost',
     notes: 'Deal was not successful',
-    amount: 0
+    amount: 0,
+    bgColor: 'bg-[#ea384c]',
+    lightBgColor: 'hover:bg-[#da283c]'
   }
 };
 
@@ -135,11 +153,17 @@ const DealBoard = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {DEAL_STATUSES.slice(0, -2).map((status) => (
-        <Card key={status} className="h-fit">
+        <Card key={status} className={`h-fit ${stages[status].bgColor} border-none shadow-md transition-colors duration-200`}>
           <CardHeader className="flex flex-row items-start justify-between">
             <div className="space-y-1">
-              <CardTitle className="text-sm font-medium">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
                 {stages[status].title}
+                {status === 'VIEWING_SCHEDULED' && (
+                  <Clock className="h-4 w-4 text-orange-500" />
+                )}
+                {status === 'AGREEMENT_PENDING' && (
+                  <Bell className="h-4 w-4 text-red-500 animate-bounce" />
+                )}
               </CardTitle>
               <div className="text-xs text-muted-foreground">
                 {stages[status].notes}
@@ -161,7 +185,11 @@ const DealBoard = () => {
             {deals
               .filter(deal => deal.status === status)
               .map(deal => (
-                <DealCard key={deal.id} deal={deal} />
+                <DealCard 
+                  key={deal.id} 
+                  deal={deal} 
+                  lightBgColor={stages[status].lightBgColor}
+                />
               ))}
           </CardContent>
         </Card>

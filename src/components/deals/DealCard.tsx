@@ -15,13 +15,22 @@ interface DealCardProps {
       email: string | null;
     } | null;
   };
+  lightBgColor: string;
 }
 
-const DealCard = ({ deal }: DealCardProps) => {
+const DealCard = ({ deal, lightBgColor }: DealCardProps) => {
+  const isRecentActivity = deal.last_activity_date && 
+    new Date(deal.last_activity_date) > new Date(Date.now() - 24 * 60 * 60 * 1000);
+
   return (
-    <Card className="hover:bg-muted/50 cursor-pointer">
+    <Card className={`${lightBgColor} transition-colors duration-200 border-none shadow-sm`}>
       <CardHeader className="p-4">
-        <div className="font-semibold truncate">{deal.title}</div>
+        <div className="flex items-start justify-between">
+          <div className="font-semibold truncate">{deal.title}</div>
+          {isRecentActivity && (
+            <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+          )}
+        </div>
         <div className="text-sm text-muted-foreground truncate">
           {deal.property_address || 'No address provided'}
         </div>
