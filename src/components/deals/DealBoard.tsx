@@ -3,6 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import DealCard from "./DealCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
+import { useState } from "react";
+import EditDealStageDialog from "./EditDealStageDialog";
 
 const DEAL_STATUSES = [
   'INITIAL_CONTACT',
@@ -15,15 +19,62 @@ const DEAL_STATUSES = [
   'CLOSED_LOST'
 ] as const;
 
-const statusLabels: Record<typeof DEAL_STATUSES[number], string> = {
-  INITIAL_CONTACT: 'Initial Contact',
-  VIEWING_SCHEDULED: 'Viewing Scheduled',
-  OFFER_MADE: 'Offer Made',
-  NEGOTIATION: 'Negotiation',
-  AGREEMENT_PENDING: 'Agreement Pending',
-  CONTRACT_SIGNED: 'Contract Signed',
-  CLOSED_WON: 'Closed Won',
-  CLOSED_LOST: 'Closed Lost'
+interface DealStage {
+  status: typeof DEAL_STATUSES[number];
+  title: string;
+  notes: string;
+  amount: number;
+}
+
+const defaultStages: Record<typeof DEAL_STATUSES[number], DealStage> = {
+  INITIAL_CONTACT: {
+    status: 'INITIAL_CONTACT',
+    title: 'Initial Contact',
+    notes: 'First contact with potential client',
+    amount: 0
+  },
+  VIEWING_SCHEDULED: {
+    status: 'VIEWING_SCHEDULED',
+    title: 'Viewing Scheduled',
+    notes: 'Property viewing arranged',
+    amount: 0
+  },
+  OFFER_MADE: {
+    status: 'OFFER_MADE',
+    title: 'Offer Made',
+    notes: 'Client has made an offer',
+    amount: 0
+  },
+  NEGOTIATION: {
+    status: 'NEGOTIATION',
+    title: 'Negotiation',
+    notes: 'Negotiating terms with client',
+    amount: 0
+  },
+  AGREEMENT_PENDING: {
+    status: 'AGREEMENT_PENDING',
+    title: 'Agreement Pending',
+    notes: 'Waiting for agreement finalization',
+    amount: 0
+  },
+  CONTRACT_SIGNED: {
+    status: 'CONTRACT_SIGNED',
+    title: 'Contract Signed',
+    notes: 'Deal contract has been signed',
+    amount: 0
+  },
+  CLOSED_WON: {
+    status: 'CLOSED_WON',
+    title: 'Closed Won',
+    notes: 'Deal successfully closed',
+    amount: 0
+  },
+  CLOSED_LOST: {
+    status: 'CLOSED_LOST',
+    title: 'Closed Lost',
+    notes: 'Deal was not successful',
+    amount: 0
+  }
 };
 
 interface Deal {
@@ -41,6 +92,9 @@ interface Deal {
 }
 
 const DealBoard = () => {
+  const [stages, setStages] = useState<Record<typeof DEAL_STATUSES[number], DealStage>>(defaultStages);
+  const [editingStage, setEditingStage] = useState<typeof DEAL_STATUSES[number] | null>(null);
+
   const { data: deals = [] } = useQuery({
     queryKey: ['deals'],
     queryFn: async () => {
@@ -66,14 +120,42 @@ const DealBoard = () => {
     }
   });
 
+  const handleSaveStage = (data: { title: string; notes: string; amount: number }) => {
+    if (editingStage) {
+      setStages(prev => ({
+        ...prev,
+        [editingStage]: {
+          ...prev[editingStage],
+          ...data
+        }
+      }));
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {DEAL_STATUSES.slice(0, -2).map((status) => (
         <Card key={status} className="h-fit">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">
-              {statusLabels[status]}
-            </CardTitle>
+          <CardHeader className="flex flex-row items-start justify-between">
+            <div className="space-y-1">
+              <CardTitle className="text-sm font-medium">
+                {stages[status].title}
+              </CardTitle>
+              <div className="text-xs text-muted-foreground">
+                {stages[status].notes}
+              </div>
+              <div className="text-xs font-medium">
+                Stage Value: R {stages[status].amount.toLocaleString()}
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setEditingStage(status)}
+              className="h-8 w-8"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
           </CardHeader>
           <CardContent className="space-y-4">
             {deals
@@ -84,6 +166,16 @@ const DealBoard = () => {
           </CardContent>
         </Card>
       ))}
+
+      <EditDealStageDialog
+        open={editingStage !== null}
+        onOpenChange={(open) => !open && setEditingStage(null)}
+        status={editingStage || ''}
+        initialTitle={editingStage ? stages[editingStage].title : ''}
+        initialNotes={editingStage ? stages[editingStage].notes : ''}
+        initialAmount={editingStage ? stages[editingStage].amount : 0}
+        onSave={handleSaveStage}
+      />
     </div>
   );
 };
