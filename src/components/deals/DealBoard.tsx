@@ -171,7 +171,7 @@ const DealBoard = () => {
                 {stages[status].notes}
               </div>
               <div className="text-xs font-medium">
-                Stage Expense: R {stages[status].expense.toLocaleString()}
+                Stage Expense: R {(stages[status]?.expense || 0).toLocaleString()}
               </div>
             </div>
             <Button
@@ -201,9 +201,9 @@ const DealBoard = () => {
         open={editingStage !== null}
         onOpenChange={(open) => !open && setEditingStage(null)}
         status={editingStage || ''}
-        initialTitle={editingStage ? stages[editingStage].title : ''}
-        initialNotes={editingStage ? stages[editingStage].notes : ''}
-        initialAmount={editingStage ? stages[editingStage].expense : 0}
+        initialTitle={editingStage ? stages[editingStage]?.title : ''}
+        initialNotes={editingStage ? stages[editingStage]?.notes : ''}
+        initialAmount={editingStage ? stages[editingStage]?.expense : 0}
         onSave={handleSaveStage}
       />
     </div>

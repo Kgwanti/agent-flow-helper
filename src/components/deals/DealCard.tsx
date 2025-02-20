@@ -37,7 +37,7 @@ const DealCard = ({ deal, lightBgColor }: DealCardProps) => {
       </CardHeader>
       <CardContent className="p-4 pt-0">
         <div className="text-sm font-medium">
-          R {deal.amount.toLocaleString()}
+          R {(deal.amount || 0).toLocaleString()}
         </div>
         {deal.client && (
           <div className="text-sm text-muted-foreground truncate">
