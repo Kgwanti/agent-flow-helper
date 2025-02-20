@@ -86,13 +86,13 @@ const EditDealStageDialog = ({
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="amount">Stage Amount (R)</Label>
+            <Label htmlFor="amount">Stage Expense (R)</Label>
             <Input
               id="amount"
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter stage amount"
+              placeholder="Enter stage expense"
               required
             />
           </div>

@@ -23,7 +23,7 @@ interface DealStage {
   status: typeof DEAL_STATUSES[number];
   title: string;
   notes: string;
-  amount: number;
+  expense: number;
   bgColor: string;
   lightBgColor: string;
 }
@@ -33,7 +33,7 @@ const defaultStages: Record<typeof DEAL_STATUSES[number], DealStage> = {
     status: 'INITIAL_CONTACT',
     title: 'Initial Contact',
     notes: 'First contact with potential client',
-    amount: 0,
+    expense: 0,
     bgColor: 'bg-[#F2FCE2]',
     lightBgColor: 'hover:bg-[#E2ECE2]'
   },
@@ -41,7 +41,7 @@ const defaultStages: Record<typeof DEAL_STATUSES[number], DealStage> = {
     status: 'VIEWING_SCHEDULED',
     title: 'Viewing Scheduled',
     notes: 'Property viewing arranged',
-    amount: 0,
+    expense: 0,
     bgColor: 'bg-[#FEF7CD]',
     lightBgColor: 'hover:bg-[#EEE7BD]'
   },
@@ -49,7 +49,7 @@ const defaultStages: Record<typeof DEAL_STATUSES[number], DealStage> = {
     status: 'OFFER_MADE',
     title: 'Offer Made',
     notes: 'Client has made an offer',
-    amount: 0,
+    expense: 0,
     bgColor: 'bg-[#FEC6A1]',
     lightBgColor: 'hover:bg-[#EEB691]'
   },
@@ -57,7 +57,7 @@ const defaultStages: Record<typeof DEAL_STATUSES[number], DealStage> = {
     status: 'NEGOTIATION',
     title: 'Negotiation',
     notes: 'Negotiating terms with client',
-    amount: 0,
+    expense: 0,
     bgColor: 'bg-[#E5DEFF]',
     lightBgColor: 'hover:bg-[#D5CEEF]'
   },
@@ -65,7 +65,7 @@ const defaultStages: Record<typeof DEAL_STATUSES[number], DealStage> = {
     status: 'AGREEMENT_PENDING',
     title: 'Agreement Pending',
     notes: 'Waiting for agreement finalization',
-    amount: 0,
+    expense: 0,
     bgColor: 'bg-[#FFDEE2]',
     lightBgColor: 'hover:bg-[#EFCED2]'
   },
@@ -73,7 +73,7 @@ const defaultStages: Record<typeof DEAL_STATUSES[number], DealStage> = {
     status: 'CONTRACT_SIGNED',
     title: 'Contract Signed',
     notes: 'Deal contract has been signed',
-    amount: 0,
+    expense: 0,
     bgColor: 'bg-[#D3E4FD]',
     lightBgColor: 'hover:bg-[#C3D4ED]'
   },
@@ -81,7 +81,7 @@ const defaultStages: Record<typeof DEAL_STATUSES[number], DealStage> = {
     status: 'CLOSED_WON',
     title: 'Closed Won',
     notes: 'Deal successfully closed',
-    amount: 0,
+    expense: 0,
     bgColor: 'bg-[#0EA5E9]',
     lightBgColor: 'hover:bg-[#0E95D9]'
   },
@@ -89,7 +89,7 @@ const defaultStages: Record<typeof DEAL_STATUSES[number], DealStage> = {
     status: 'CLOSED_LOST',
     title: 'Closed Lost',
     notes: 'Deal was not successful',
-    amount: 0,
+    expense: 0,
     bgColor: 'bg-[#ea384c]',
     lightBgColor: 'hover:bg-[#da283c]'
   }
@@ -144,7 +144,9 @@ const DealBoard = () => {
         ...prev,
         [editingStage]: {
           ...prev[editingStage],
-          ...data
+          title: data.title,
+          notes: data.notes,
+          expense: data.amount
         }
       }));
     }
@@ -169,7 +171,7 @@ const DealBoard = () => {
                 {stages[status].notes}
               </div>
               <div className="text-xs font-medium">
-                Stage Value: R {stages[status].amount.toLocaleString()}
+                Stage Expense: R {stages[status].expense.toLocaleString()}
               </div>
             </div>
             <Button
@@ -201,7 +203,7 @@ const DealBoard = () => {
         status={editingStage || ''}
         initialTitle={editingStage ? stages[editingStage].title : ''}
         initialNotes={editingStage ? stages[editingStage].notes : ''}
-        initialAmount={editingStage ? stages[editingStage].amount : 0}
+        initialAmount={editingStage ? stages[editingStage].expense : 0}
         onSave={handleSaveStage}
       />
     </div>
