@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Bell, Clock, Plus } from "lucide-react";
@@ -12,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface StageCardProps {
   stage: Stage;
@@ -29,8 +30,21 @@ interface AddClientFormData {
 
 const StageCard = ({ stage, deals, onEditStage }: StageCardProps) => {
   const [isAddClientOpen, setIsAddClientOpen] = useState(false);
-  const [clients, setClients] = useState<StageClient[]>([]);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  const { data: clients = [] } = useQuery({
+    queryKey: ['stage-clients', stage.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('stage_clients')
+        .select('*')
+        .eq('stage_id', stage.id);
+      
+      if (error) throw error;
+      return data as StageClient[];
+    }
+  });
   
   const form = useForm<AddClientFormData>({
     defaultValues: {
@@ -42,18 +56,35 @@ const StageCard = ({ stage, deals, onEditStage }: StageCardProps) => {
     }
   });
 
-  const onSubmit = (data: AddClientFormData) => {
-    const newClient: StageClient = {
-      id: crypto.randomUUID(),
-      ...data
-    };
-    setClients(prev => [...prev, newClient]);
-    toast({
-      title: "Client added",
-      description: "New client has been successfully added to this stage."
-    });
-    setIsAddClientOpen(false);
-    form.reset();
+  const onSubmit = async (data: AddClientFormData) => {
+    try {
+      const newClient = {
+        id: crypto.randomUUID(),
+        stage_id: stage.id,
+        ...data
+      };
+
+      const { error } = await supabase
+        .from('stage_clients')
+        .insert([newClient]);
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['stage-clients', stage.id] });
+      
+      toast({
+        title: "Client added",
+        description: "New client has been successfully added to this stage."
+      });
+      setIsAddClientOpen(false);
+      form.reset();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add client. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
