@@ -272,6 +272,42 @@ export type Database = {
         }
         Relationships: []
       }
+      stage_clients: {
+        Row: {
+          clientname: string
+          completionstatus: string
+          created_at: string
+          duedate: string
+          expense: number
+          id: string
+          notes: string | null
+          stage_id: string
+          updated_at: string
+        }
+        Insert: {
+          clientname: string
+          completionstatus?: string
+          created_at?: string
+          duedate: string
+          expense?: number
+          id?: string
+          notes?: string | null
+          stage_id: string
+          updated_at?: string
+        }
+        Update: {
+          clientname?: string
+          completionstatus?: string
+          created_at?: string
+          duedate?: string
+          expense?: number
+          id?: string
+          notes?: string | null
+          stage_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       viewing_appointments: {
         Row: {
           address: string | null

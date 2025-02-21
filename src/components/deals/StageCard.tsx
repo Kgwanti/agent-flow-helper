@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Bell, Clock, Plus } from "lucide-react";
@@ -59,7 +60,6 @@ const StageCard = ({ stage, deals, onEditStage }: StageCardProps) => {
   const onSubmit = async (data: AddClientFormData) => {
     try {
       const newClient = {
-        id: crypto.randomUUID(),
         stage_id: stage.id,
         ...data
       };
