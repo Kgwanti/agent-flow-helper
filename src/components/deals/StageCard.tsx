@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Bell, Clock, Plus } from "lucide-react";
-import { Stage, Deal } from "./types";
+import { Stage, Deal, StageClient } from "./types";
 import DealCard from "./DealCard";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface StageCardProps {
   stage: Stage;
@@ -28,6 +29,7 @@ interface AddClientFormData {
 
 const StageCard = ({ stage, deals, onEditStage }: StageCardProps) => {
   const [isAddClientOpen, setIsAddClientOpen] = useState(false);
+  const [clients, setClients] = useState<StageClient[]>([]);
   const { toast } = useToast();
   
   const form = useForm<AddClientFormData>({
@@ -41,8 +43,11 @@ const StageCard = ({ stage, deals, onEditStage }: StageCardProps) => {
   });
 
   const onSubmit = (data: AddClientFormData) => {
-    // Here you would typically save this to your backend
-    console.log("New client data:", data);
+    const newClient: StageClient = {
+      id: crypto.randomUUID(),
+      ...data
+    };
+    setClients(prev => [...prev, newClient]);
     toast({
       title: "Client added",
       description: "New client has been successfully added to this stage."
@@ -82,6 +87,31 @@ const StageCard = ({ stage, deals, onEditStage }: StageCardProps) => {
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">
+          {clients.length > 0 && (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[150px]">Client Name</TableHead>
+                    <TableHead>Expense</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Due Date</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {clients.map((client) => (
+                    <TableRow key={client.id}>
+                      <TableCell className="font-medium">{client.clientName}</TableCell>
+                      <TableCell>R {client.expense.toLocaleString()}</TableCell>
+                      <TableCell>{client.completionStatus}</TableCell>
+                      <TableCell>{new Date(client.dueDate).toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+          
           {deals
             .filter(deal => deal.status === stage.status)
             .map(deal => (

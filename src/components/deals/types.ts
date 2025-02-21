@@ -23,3 +23,12 @@ export interface Deal {
     email: string | null;
   } | null;
 }
+
+export interface StageClient {
+  id: string;
+  clientName: string;
+  expense: number;
+  notes: string;
+  dueDate: string;
+  completionStatus: string;
+}
