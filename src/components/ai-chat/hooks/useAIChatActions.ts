@@ -1,6 +1,5 @@
 
 import { Message } from '@/types/chat';
-import { EmailConfirmation } from '../types';
 
 interface UseAIChatActionsProps {
   messages: Message[];
