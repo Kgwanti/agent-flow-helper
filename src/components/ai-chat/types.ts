@@ -23,9 +23,3 @@ export interface AIChatContentProps {
   showHelpMessage: boolean;
   setShowHelpMessage: (show: boolean) => void;
 }
-
-export interface EmailConfirmation {
-  show: boolean;
-  content: string;
-  recipientEmail: string;
-}
