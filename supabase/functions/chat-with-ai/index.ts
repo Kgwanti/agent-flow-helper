@@ -16,6 +16,11 @@ serve(async (req) => {
   try {
     const { message } = await req.json();
 
+    if (!message) {
+      throw new Error('Message is required');
+    }
+
+    console.log('Sending request to OpenRouter API...');
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -36,12 +41,13 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error('OpenRouter API error:', error);
+      console.error('OpenRouter API Error:', await response.text());
       throw new Error('Failed to generate AI response');
     }
 
     const data = await response.json();
+    console.log('Received response from OpenRouter API');
+    
     return new Response(JSON.stringify({ response: data.choices[0].message.content }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
