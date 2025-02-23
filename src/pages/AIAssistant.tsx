@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import AIChatAssistant from "@/components/AIChatAssistant";
@@ -33,9 +34,9 @@ const AIAssistant = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex-1 container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -62,7 +63,8 @@ const AIAssistant = () => {
           </Button>
           <h1 className="text-2xl font-bold">AI Real Estate Assistant</h1>
         </div>
-        <div className="bg-white rounded-lg shadow-lg p-6 h-[calc(100vh-12rem)]">
+        
+        <div className="bg-white rounded-lg shadow-lg p-6 flex-1 min-h-[calc(100vh-16rem)]">
           <AIChatAssistant embedded={true} />
         </div>
       </div>
