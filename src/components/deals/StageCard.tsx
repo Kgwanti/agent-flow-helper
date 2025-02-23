@@ -22,11 +22,11 @@ interface StageCardProps {
 }
 
 interface AddClientFormData {
-  clientName: string;
+  clientname: string;  // Changed to match database column
   expense: number;
   notes: string;
-  dueDate: string;
-  completionStatus: string;
+  duedate: string;    // Changed to match database column
+  completionstatus: string;  // Changed to match database column
 }
 
 const StageCard = ({ stage, deals, onEditStage }: StageCardProps) => {
@@ -49,11 +49,11 @@ const StageCard = ({ stage, deals, onEditStage }: StageCardProps) => {
   
   const form = useForm<AddClientFormData>({
     defaultValues: {
-      clientName: "",
+      clientname: "",
       expense: 0,
       notes: "",
-      dueDate: new Date().toISOString().split('T')[0],
-      completionStatus: "pending"
+      duedate: new Date().toISOString().split('T')[0],
+      completionstatus: "pending"
     }
   });
 
@@ -132,10 +132,10 @@ const StageCard = ({ stage, deals, onEditStage }: StageCardProps) => {
                 <TableBody>
                   {clients.map((client) => (
                     <TableRow key={client.id}>
-                      <TableCell className="font-medium">{client.clientName}</TableCell>
+                      <TableCell className="font-medium">{client.clientname}</TableCell>
                       <TableCell>R {client.expense.toLocaleString()}</TableCell>
-                      <TableCell>{client.completionStatus}</TableCell>
-                      <TableCell>{new Date(client.dueDate).toLocaleDateString()}</TableCell>
+                      <TableCell>{client.completionstatus}</TableCell>
+                      <TableCell>{new Date(client.duedate).toLocaleDateString()}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -164,7 +164,7 @@ const StageCard = ({ stage, deals, onEditStage }: StageCardProps) => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="clientName"
+                name="clientname"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Client Name</FormLabel>
@@ -212,7 +212,7 @@ const StageCard = ({ stage, deals, onEditStage }: StageCardProps) => {
 
               <FormField
                 control={form.control}
-                name="dueDate"
+                name="duedate"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Due Date</FormLabel>
@@ -225,7 +225,7 @@ const StageCard = ({ stage, deals, onEditStage }: StageCardProps) => {
 
               <FormField
                 control={form.control}
-                name="completionStatus"
+                name="completionstatus"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Completion Status</FormLabel>

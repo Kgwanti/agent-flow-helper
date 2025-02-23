@@ -26,9 +26,12 @@ export interface Deal {
 
 export interface StageClient {
   id: string;
-  clientName: string;
+  clientname: string;  // Changed from clientName
   expense: number;
   notes: string;
-  dueDate: string;
-  completionStatus: string;
+  duedate: string;    // Changed from dueDate
+  completionstatus: string;  // Changed from completionStatus
+  stage_id: string;
+  created_at: string;
+  updated_at: string;
 }
