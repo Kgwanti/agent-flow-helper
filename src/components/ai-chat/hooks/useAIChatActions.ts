@@ -1,3 +1,4 @@
+
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Message } from '@/types/chat';
@@ -37,6 +38,22 @@ export const useAIChatActions = ({
 
       const wantsEmail = /email|send|copy|transcript/i.test(message.toLowerCase());
 
+      // First check if user is authenticated
+      if (!userId) {
+        throw new Error('You must be logged in to send messages');
+      }
+
+      // Get profile ID for the authenticated user
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', userId)
+        .single();
+
+      if (profileError || !profileData) {
+        throw new Error('Unable to find user profile');
+      }
+
       const { data, error } = await supabase.functions.invoke('chat-with-ai', {
         body: { 
           message,
@@ -54,6 +71,21 @@ export const useAIChatActions = ({
         throw new Error('No response received from AI');
       }
 
+      // Log the communication
+      const { error: logError } = await supabase
+        .from('communication_logs')
+        .insert([{
+          profile_id: profileData.id,
+          message_type: 'ai_chat',
+          content: message
+        }]);
+
+      if (logError) {
+        console.error('Error logging communication:', logError);
+        // Don't throw here - we don't want to break the chat experience
+        // just because logging failed
+      }
+
       const assistantMessage: Message = { role: 'assistant', content: data.response };
       setMessages((prev) => [...prev, assistantMessage]);
 
@@ -64,17 +96,17 @@ export const useAIChatActions = ({
           recipientEmail: userProfile.email
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
       const errorMessage: Message = { 
         role: 'assistant', 
-        content: 'Sorry, I encountered an error. Please try again later.' 
+        content: error.message || 'Sorry, I encountered an error. Please try again later.' 
       };
       setMessages((prev) => [...prev, errorMessage]);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to send message. Please try again.",
+        description: error.message || "Failed to send message. Please try again.",
       });
     } finally {
       setIsLoading(false);
