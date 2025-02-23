@@ -1,0 +1,4 @@
+
+project_id = "bmgnrtdviohxmcfyikvt"
+[secrets]
+OPENROUTER_API_KEY = "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"

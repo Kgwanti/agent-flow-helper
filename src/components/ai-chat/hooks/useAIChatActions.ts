@@ -1,5 +1,6 @@
 
 import { Message } from '@/types/chat';
+import { supabase } from '@/integrations/supabase/client';
 
 interface UseAIChatActionsProps {
   messages: Message[];
@@ -23,11 +24,25 @@ export const useAIChatActions = ({
       setMessages([...messages, userMessage]);
       setInputMessage("");
 
-      // Simple mock response for now
-      const mockResponse = "This is a placeholder response. The chat functionality will be rebuilt from scratch.";
+      const { data, error } = await supabase.functions.invoke('chat-with-ai', {
+        body: { message }
+      });
+
+      if (error) throw error;
+
+      const assistantMessage: Message = { 
+        role: 'assistant', 
+        content: data.response || "I apologize, but I'm having trouble processing your request at the moment."
+      };
       
-      const assistantMessage: Message = { role: 'assistant', content: mockResponse };
       setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const errorMessage: Message = {
+        role: 'assistant',
+        content: "I apologize, but I encountered an error while processing your request. Please try again later."
+      };
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
