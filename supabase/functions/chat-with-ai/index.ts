@@ -20,23 +20,24 @@ serve(async (req) => {
       throw new Error('Message is required');
     }
 
-    console.log('Received request:', {
-      message,
-      userId: req.headers.get('x-user-id'),  // Log user ID if available
-      sendEmail: false,
-      documentId: undefined,
-      action: undefined
-    });
+    const apiKey = Deno.env.get('OPENROUTER_API_KEY');
+    if (!apiKey) {
+      console.error('OpenRouter API key is not configured');
+      throw new Error('API configuration error');
+    }
+
+    console.log('Making request to OpenRouter API with key:', apiKey.substring(0, 10) + '...');
 
     const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENROUTER_API_KEY')}`,
+        'Authorization': `Bearer ${apiKey}`,
         'HTTP-Referer': 'https://lovable.dev',
+        'X-Title': 'Real Estate Assistant',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: 'google/gemini-pro',
         messages: [
           {
             role: 'system',
@@ -53,15 +54,20 @@ serve(async (req) => {
     });
 
     if (!openRouterResponse.ok) {
-      const errorData = await openRouterResponse.text();
-      console.error('OpenRouter API Error Response:', errorData);
-      throw new Error(`OpenRouter API error: ${openRouterResponse.status}`);
+      const errorText = await openRouterResponse.text();
+      console.error('OpenRouter API Error:', {
+        status: openRouterResponse.status,
+        statusText: openRouterResponse.statusText,
+        response: errorText
+      });
+      throw new Error(`OpenRouter API error: ${openRouterResponse.status} - ${errorText}`);
     }
 
     const data = await openRouterResponse.json();
-    console.log('OpenRouter API Response received');
+    console.log('OpenRouter API Response received successfully');
 
     if (!data.choices?.[0]?.message?.content) {
+      console.error('Invalid response format:', data);
       throw new Error('Invalid response format from OpenRouter API');
     }
 
@@ -72,10 +78,8 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in chat-with-ai function:', error);
     
-    // Send a more specific error message back to the client
-    const errorMessage = error.message || 'An unexpected error occurred';
     return new Response(JSON.stringify({ 
-      error: errorMessage,
+      error: error.message,
       details: 'If this persists, please contact support.'
     }), {
       status: 500,
