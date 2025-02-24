@@ -26,31 +26,25 @@ serve(async (req) => {
       throw new Error('API configuration error');
     }
 
-    console.log('Making request to OpenRouter API with key:', apiKey.substring(0, 10) + '...');
+    console.log('Making request to OpenRouter API...');
 
     const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'https://lovable.dev',
-        'X-Title': 'Real Estate Assistant',
-        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://lovable.dev',  // Required for rankings
+        'X-Title': 'Real Estate Assistant',     // Required for rankings
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'google/gemini-pro',
+        model: "openai/gpt-4",  // Using their recommended model format
         messages: [
           {
-            role: 'system',
-            content: `You are a helpful real estate assistant. You help users with:
-              - Property viewings and scheduling
-              - Real estate market information
-              - Document management
-              - Client communication
-              Be concise and professional in your responses.`
-          },
-          { role: 'user', content: message }
-        ],
-      }),
+            role: "user",
+            content: message
+          }
+        ]
+      })
     });
 
     if (!openRouterResponse.ok) {
